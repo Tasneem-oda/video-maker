@@ -669,7 +669,21 @@
   // ─── Submit ──────────────────────────────────────────────────
   submitBtn.addEventListener('click', async () => {
     hideError();
+    // 1. تعريف متغير للقفل
+let wakeLock = null;
 
+// 2. دالة طلب القفل
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Screen Wake Lock active');
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// 3. استدعاء الدالة عند بدء التحميل
+await requestWakeLock();
     const webhookUrl = "https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4";
     if (!webhookUrl) {
       showError('⚠️ الرجاء إدخال رابط Webhook الخاص بـ n8n أولاً');
@@ -761,6 +775,12 @@
       showError('❌ ' + (err.message || 'حدث خطأ غير متوقع'));
       console.error(err);
     }
+    if (wakeLock !== null) {
+  wakeLock.release()
+  .then(() => {
+    wakeLock = null;
+  });
+}
   });
 
   // ─── Again button ────────────────────────────────────────────
