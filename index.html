@@ -7,27 +7,24 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    /* ─── Variables ─────────────────────────────────────────── */
     :root {
-      --bg:        #070910;
-      --surface:   #0e1118;
-      --surface2:  #141820;
-      --border:    #1c2230;
-      --border2:   #252e40;
+      --bg:        #0a0c10;
+      --surface:   #111418;
+      --border:    #1e2530;
       --accent:    #00e5ff;
       --accent2:   #7b61ff;
-      --accent3:   #ff6b6b;
-      --success:   #00c896;
-      --warning:   #ffb347;
       --danger:    #ff4d6d;
+      --success:   #00c896;
       --text:      #e8edf5;
-      --text2:     #9aa5bc;
-      --muted:     #4a5568;
-      --radius:    18px;
-      --radius-sm: 10px;
-      --shadow:    0 0 60px rgba(0,229,255,.08);
-      --shadow-lg: 0 20px 80px rgba(0,0,0,.6);
+      --muted:     #5a6478;
+      --radius:    16px;
+      --glow:      0 0 40px rgba(0,229,255,.15);
     }
+
+    /* ─── Reset ─────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     html, body {
       min-height: 100vh;
       background: var(--bg);
@@ -35,410 +32,461 @@
       font-family: 'IBM Plex Sans Arabic', sans-serif;
       overflow-x: hidden;
     }
-    .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-    .ambient::before {
-      content: ''; position: absolute; inset: 0;
+
+    /* ─── Animated Background ───────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 60% 50% at 15% 15%, rgba(0,229,255,.07) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 60% at 85% 85%, rgba(123,97,255,.07) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,200,150,.03) 0%, transparent 50%);
-    }
-    .grid-bg {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-      background-size: 56px 56px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
-    }
-    .page {
-      position: relative; z-index: 1;
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 2.5rem 1rem; gap: 1.8rem;
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(0,229,255,.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 80% 80%, rgba(123,97,255,.06) 0%, transparent 60%);
+      pointer-events: none;
     }
 
-    /* ── Header ── */
-    .header { text-align: center; animation: fadeUp .6s .05s ease both; }
-    .client-badge {
-      display: inline-flex; align-items: center; gap: .5rem;
-      padding: .3rem .85rem; border: 1px solid var(--border2);
-      border-radius: 999px; font-size: .72rem;
-      font-family: 'Space Mono', monospace; color: var(--text2);
-      letter-spacing: .06em; margin-bottom: .6rem; background: var(--surface2);
+    /* ─── Grid Lines ────────────────────────────────────────── */
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
     }
-    .client-badge .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--success); animation: pulse-dot 2s infinite;
+
+    /* ─── Layout ─────────────────────────────────────────────── */
+    .page {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 2rem;
     }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .header {
+      text-align: center;
+    }
+    .header .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .35rem .9rem;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      font-size: .72rem;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      letter-spacing: .08em;
+      margin-bottom: 1.2rem;
+      background: rgba(0,229,255,.05);
+    }
+    .header .badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.5s infinite; }
     .header h1 {
-      font-size: clamp(1.7rem, 4.5vw, 2.6rem); font-weight: 700;
-      letter-spacing: -.025em; line-height: 1.15;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.15;
     }
     .header h1 em {
       font-style: normal;
-      background: linear-gradient(130deg, var(--accent) 0%, var(--accent2) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    .header p { margin-top: .6rem; color: var(--text2); font-size: .9rem; font-weight: 300; }
+    .header p {
+      margin-top: .75rem;
+      color: var(--muted);
+      font-size: .95rem;
+      font-weight: 300;
+    }
 
-    /* ── Card ── */
+    /* ─── Card ───────────────────────────────────────────────── */
     .card {
-      width: 100%; max-width: 500px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.8rem;
-      box-shadow: var(--shadow), var(--shadow-lg);
-      animation: fadeUp .6s .15s ease both;
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--glow);
+      transition: box-shadow .3s;
     }
 
-    /* ── Drop Zone ── */
+    /* ─── Drop Zone ──────────────────────────────────────────── */
     .drop-zone {
-      border: 2px dashed var(--border2); border-radius: 14px;
-      padding: 2.2rem 1.5rem; text-align: center; cursor: pointer;
-      transition: all .25s; position: relative;
-      background: rgba(255,255,255,.012);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all .25s;
+      position: relative;
+      background: rgba(255,255,255,.015);
     }
     .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--accent); background: rgba(0,229,255,.04);
-      transform: translateY(-1px);
+      border-color: var(--accent);
+      background: rgba(0,229,255,.04);
     }
     .drop-zone input[type="file"] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer;
-      width: 100%; height: 100%;
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
     }
-    .icon-wrap {
-      width: 56px; height: 56px; margin: 0 auto .9rem;
-      background: linear-gradient(135deg, rgba(0,229,255,.12), rgba(123,97,255,.12));
-      border: 1px solid var(--border2); border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; transition: transform .25s;
+    .drop-zone .icon {
+      font-size: 2.5rem;
+      margin-bottom: .8rem;
+      display: block;
     }
-    .drop-zone:hover .icon-wrap { transform: scale(1.08) rotate(-3deg); }
-    .drop-zone .label { font-size: .95rem; font-weight: 600; color: var(--text); margin-bottom: .35rem; }
-    .drop-zone .sublabel { font-size: .78rem; color: var(--muted); }
-    .drop-zone .size-note {
-      margin-top: .5rem; font-size: .72rem; color: var(--muted);
-      font-family: 'Space Mono', monospace;
+    .drop-zone .label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: .4rem;
+    }
+    .drop-zone .sublabel {
+      font-size: .8rem;
+      color: var(--muted);
     }
 
-    /* ── File Info ── */
+    /* ─── File Selected State ────────────────────────────────── */
     .file-info {
-      display: none; align-items: center; gap: .9rem;
-      background: rgba(0,229,255,.05); border: 1px solid rgba(0,229,255,.2);
-      border-radius: var(--radius-sm); padding: .9rem 1.1rem; margin-top: .9rem;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(0,229,255,.06);
+      border: 1px solid rgba(0,229,255,.25);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-top: 1rem;
     }
     .file-info.show { display: flex; }
-    .file-icon {
-      width: 38px; height: 38px; flex-shrink: 0;
-      background: rgba(0,229,255,.12); border-radius: 9px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-    }
-    .file-name { font-size: .85rem; font-weight: 600; color: var(--accent); word-break: break-all; }
-    .file-size { font-size: .72rem; color: var(--muted); margin-top: .1rem; font-family: 'Space Mono', monospace; }
-    .remove-btn {
-      margin-right: auto; flex-shrink: 0; background: none; border: none;
-      color: var(--muted); cursor: pointer; font-size: 1rem;
-      padding: .2rem; transition: color .2s;
-    }
-    .remove-btn:hover { color: var(--danger); }
-
-    /* ── Submit Button ── */
-    .submit-btn {
-      margin-top: 1.3rem; width: 100%; padding: .85rem 1.5rem;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border: none; border-radius: var(--radius-sm);
-      color: #000; font-family: 'IBM Plex Sans Arabic', sans-serif;
-      font-size: .95rem; font-weight: 700; cursor: pointer; transition: all .25s;
-      display: flex; align-items: center; justify-content: center; gap: .55rem;
-      position: relative; overflow: hidden;
-    }
-    .submit-btn::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
-      opacity: 0; transition: opacity .2s;
-    }
-    .submit-btn:hover:not(:disabled)::after { opacity: 1; }
-    .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 35px rgba(0,229,255,.35); }
-    .submit-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
-
-    /* ── Error Box ── */
-    .error-box {
-      display: none; margin-top: .9rem; padding: .85rem 1rem;
-      background: rgba(255,77,109,.07); border: 1px solid rgba(255,77,109,.25);
-      border-radius: var(--radius-sm); color: var(--danger);
-      font-size: .83rem; line-height: 1.55;
-    }
-    .error-box.show { display: block; }
-    .error-code { font-family: 'Space Mono', monospace; font-size: .68rem; opacity: .6; margin-bottom: .3rem; }
-
-    /* ══════════════════════════════════════════════════════════
-       LOADING SECTION
-    ══════════════════════════════════════════════════════════ */
-    #loading-section { display: none; }
-
-    /* ── Waveform ── */
-    .waveform {
+    .file-info .file-icon {
+      width: 40px; height: 40px;
+      background: rgba(0,229,255,.15);
+      border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      gap: 4px; height: 48px; margin-bottom: 1.3rem;
+      font-size: 1.2rem; flex-shrink: 0;
     }
-    .wave-bar {
-      width: 4px; border-radius: 4px; background: var(--accent);
-      animation: wave-bounce 1.2s ease-in-out infinite;
-      transform-origin: bottom;
+    .file-info .file-name {
+      font-size: .88rem;
+      font-weight: 500;
+      color: var(--accent);
+      word-break: break-all;
     }
-    .wave-bar:nth-child(odd)  { background: var(--accent2); }
-    .wave-bar:nth-child(3n)   { background: var(--success); }
-    .wave-bar:nth-child(1)  { height: 20%; animation-delay: 0s;    }
-    .wave-bar:nth-child(2)  { height: 40%; animation-delay: .08s;  }
-    .wave-bar:nth-child(3)  { height: 65%; animation-delay: .16s;  }
-    .wave-bar:nth-child(4)  { height: 85%; animation-delay: .24s;  }
-    .wave-bar:nth-child(5)  { height:100%; animation-delay: .32s;  }
-    .wave-bar:nth-child(6)  { height: 90%; animation-delay: .40s;  }
-    .wave-bar:nth-child(7)  { height:100%; animation-delay: .48s;  }
-    .wave-bar:nth-child(8)  { height: 75%; animation-delay: .56s;  }
-    .wave-bar:nth-child(9)  { height: 55%; animation-delay: .64s;  }
-    .wave-bar:nth-child(10) { height: 35%; animation-delay: .72s;  }
-    .wave-bar:nth-child(11) { height: 60%; animation-delay: .80s;  }
-    .wave-bar:nth-child(12) { height: 80%; animation-delay: .88s;  }
-    .wave-bar:nth-child(13) { height: 45%; animation-delay: .12s;  }
-    .wave-bar:nth-child(14) { height: 25%; animation-delay: .20s;  }
-    .wave-bar:nth-child(15) { height: 15%; animation-delay: .04s;  }
-    @keyframes wave-bounce {
-      0%, 100% { transform: scaleY(.25); opacity: .45; }
-      50%       { transform: scaleY(1);  opacity: 1;   }
+    .file-info .file-size {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: .15rem;
+    }
+    .file-info .remove-btn {
+      margin-right: auto;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: .25rem;
+      transition: color .2s;
+      flex-shrink: 0;
+    }
+    .file-info .remove-btn:hover { color: var(--danger); }
+
+    /* ─── Submit Button ──────────────────────────────────────── */
+    .submit-btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: .9rem 1.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+    }
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,229,255,.3);
+    }
+    .submit-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    /* ── Dynamic Title ── */
-    .loading-title {
-      font-size: 1.05rem; font-weight: 600; text-align: center;
-      margin-bottom: .25rem; min-height: 1.6em;
-      transition: opacity .35s ease;
+    /* ─── N8N URL Config ─────────────────────────────────────── */
+    .config-row {
+      display: none;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: 1.25rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .6rem .9rem;
     }
-
-    /* ── Progress Bar ── */
-    .progress-wrap { margin: .9rem 0 1.1rem; }
-    .progress-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: .45rem;
-    }
-    .progress-label {
-      font-size: .72rem; color: var(--text2);
-      font-family: 'Space Mono', monospace; transition: opacity .3s;
-    }
-    .progress-right { display: flex; align-items: center; gap: .75rem; }
-    .elapsed-time {
-      font-size: .72rem; color: var(--muted);
+    .config-row label {
+      font-size: .75rem;
+      color: var(--muted);
+      white-space: nowrap;
       font-family: 'Space Mono', monospace;
     }
-    .progress-pct {
-      font-size: .78rem; font-weight: 700;
-      font-family: 'Space Mono', monospace; color: var(--accent);
-      min-width: 2.8em; text-align: left;
+    .config-row input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: .8rem;
+      font-family: 'Space Mono', monospace;
+      min-width: 0;
     }
-    .progress-track {
-      height: 6px; background: var(--border2);
-      border-radius: 999px; overflow: hidden; position: relative;
+    .config-row input::placeholder { color: var(--muted); }
+
+    /* ─── Loading State ──────────────────────────────────────── */
+    #loading-section {
+      display: none;
+      text-align: center;
     }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent2), var(--accent));
-      border-radius: 999px;
-      transition: width .85s cubic-bezier(.4,0,.2,1);
+    #loading-section.show { display: block; }
+
+    .loader-wrap {
       position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
     }
-    .progress-fill::after {
-      content: ''; position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.45) 50%, transparent 100%);
-      animation: shimmer 1.8s linear infinite;
+    .loader-ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      animation: spin 1.2s linear infinite;
     }
-    @keyframes shimmer {
-      0%   { transform: translateX(-100%); }
-      100% { transform: translateX(100%);  }
+    .loader-ring:nth-child(1) { border-top-color: var(--accent); animation-duration: 1.2s; }
+    .loader-ring:nth-child(2) { border-right-color: var(--accent2); inset: 8px; animation-duration: 1.8s; animation-direction: reverse; }
+    .loader-ring:nth-child(3) { border-bottom-color: var(--success); inset: 16px; animation-duration: 2.4s; }
+    .loader-core {
+      position: absolute;
+      inset: 28px;
+      background: radial-gradient(circle, rgba(0,229,255,.2), transparent);
+      border-radius: 50%;
+      animation: breathe 2s ease-in-out infinite;
     }
 
-    /* ── Steps ── */
-    .steps { display: flex; flex-direction: column; gap: .45rem; }
+    .loading-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: .5rem;
+    }
+    .loading-sub {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+    .progress-steps {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      text-align: right;
+    }
     .step {
-      display: flex; align-items: flex-start; gap: .75rem;
-      padding: .6rem .9rem; border-radius: 10px;
-      background: rgba(255,255,255,.015); border: 1px solid transparent;
-      transition: all .4s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .6rem .9rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid transparent;
+      font-size: .82rem;
+      color: var(--muted);
+      transition: all .4s;
     }
     .step.active {
-      border-color: rgba(0,229,255,.3); background: rgba(0,229,255,.06);
-      box-shadow: 0 0 18px rgba(0,229,255,.07);
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(0,229,255,.05);
     }
-    .step.done {
-      border-color: rgba(0,200,150,.18); background: rgba(0,200,150,.04);
+    .step.done { color: var(--success); border-color: rgba(0,200,150,.3); background: rgba(0,200,150,.05); }
+    .step .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background .4s;
     }
-    .step.waiting { opacity: .38; }
+    .step.active .step-dot { background: var(--accent); animation: pulse 1s infinite; }
+    .step.done .step-dot { background: var(--success); }
 
-    .step-icon {
-      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .75rem; background: var(--border2); color: var(--muted);
-      transition: all .4s; margin-top: .05rem; font-style: normal;
-    }
-    .step.active .step-icon {
-      background: rgba(0,229,255,.18); color: var(--accent);
-      animation: step-glow 1.6s ease-in-out infinite;
-    }
-    .step.done .step-icon { background: rgba(0,200,150,.18); color: var(--success); }
-    @keyframes step-glow {
-      0%,100% { box-shadow: 0 0 0 0   rgba(0,229,255,.5); }
-      50%      { box-shadow: 0 0 0 5px rgba(0,229,255,.0); }
-    }
-
-    .step-body { flex: 1; min-width: 0; }
-    .step-title {
-      font-size: .82rem; font-weight: 600; color: var(--muted);
-      transition: color .4s; line-height: 1.3;
-    }
-    .step.active .step-title { color: var(--text); }
-    .step.done   .step-title { color: var(--success); }
-
-    /* detail دائماً موجود — يُضاء فقط عند active */
-    .step-detail {
-      font-size: .71rem; color: transparent;
-      font-family: 'Space Mono', monospace; margin-top: .18rem;
-      max-height: 0; overflow: hidden;
-      transition: max-height .5s ease, opacity .4s, color .4s;
-      opacity: 0; white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .step.active .step-detail {
-      max-height: 24px; opacity: 1; color: var(--muted);
-    }
-
-    /* مؤشر التشغيل (3 نقاط) داخل الخطوة النشطة */
-    .step-spinner {
-      display: none; gap: 3px; align-items: center;
-      margin-right: auto; flex-shrink: 0;
-    }
-    .step.active .step-spinner { display: flex; }
-    .step-spinner span {
-      width: 4px; height: 4px; border-radius: 50%;
-      background: var(--accent); opacity: .6;
-      animation: dot-dance .9s ease-in-out infinite;
-    }
-    .step-spinner span:nth-child(2) { animation-delay: .15s; }
-    .step-spinner span:nth-child(3) { animation-delay: .30s; }
-    @keyframes dot-dance { 0%,80%,100%{transform:scale(.6);opacity:.3} 40%{transform:scale(1);opacity:1} }
-
-    /* مدة الخطوة المكتملة */
-    .step-duration {
-      font-size: .65rem; color: var(--success); font-family: 'Space Mono', monospace;
-      flex-shrink: 0; margin-top: .15rem; opacity: 0;
-      transition: opacity .5s; white-space: nowrap;
-    }
-    .step.done .step-duration { opacity: .65; }
-
-    /* ── Tip Box ── */
-    .tip-box {
-      margin-top: 1.1rem; padding: .75rem 1rem;
-      background: rgba(123,97,255,.07); border: 1px solid rgba(123,97,255,.2);
-      border-radius: var(--radius-sm); min-height: 56px;
-      display: flex; align-items: center; gap: .75rem;
-    }
-    .tip-icon { font-size: 1.1rem; flex-shrink: 0; }
-    .tip-text {
-      font-size: .78rem; color: var(--text2); line-height: 1.55;
-      transition: opacity .45s ease;
-    }
-    .tip-text.fade-out { opacity: 0; }
-
-    /* ══════════════════════════════════════════════════════════
-       RESULT SECTION
-    ══════════════════════════════════════════════════════════ */
+    /* ─── Result State ───────────────────────────────────────── */
     #result-section { display: none; }
+    #result-section.show { display: block; }
+
     .result-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 1.25rem;
     }
     .result-badge {
-      display: inline-flex; align-items: center; gap: .45rem;
-      padding: .35rem .85rem;
-      background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.3);
-      border-radius: 999px; color: var(--success); font-size: .78rem; font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .4rem .9rem;
+      background: rgba(0,200,150,.1);
+      border: 1px solid rgba(0,200,150,.3);
+      border-radius: 999px;
+      color: var(--success);
+      font-size: .8rem;
+      font-weight: 500;
     }
-    .result-meta { font-family: 'Space Mono', monospace; font-size: .68rem; color: var(--muted); }
+    .result-badge::before {
+      content: '✓';
+      font-weight: 700;
+    }
+
     .video-wrapper {
-      border-radius: 13px; overflow: hidden;
-      background: #000; border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid var(--border);
+      position: relative;
       box-shadow: 0 0 40px rgba(0,0,0,.5);
     }
-    #result-video { width: 100%; display: block; max-height: 300px; object-fit: contain; }
-    .result-actions { display: flex; gap: .7rem; margin-top: .9rem; }
+    #result-video {
+      width: 100%;
+      display: block;
+      max-height: 320px;
+      object-fit: contain;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: .75rem;
+      margin-top: 1rem;
+    }
     .action-btn {
-      flex: 1; padding: .7rem; border-radius: var(--radius-sm);
-      border: 1px solid var(--border2); background: var(--surface2); color: var(--text);
-      font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: .88rem; font-weight: 500;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      gap: .45rem; transition: all .2s; text-decoration: none;
+      flex: 1;
+      padding: .75rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      transition: all .2s;
+      text-decoration: none;
     }
     .action-btn.primary {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-color: transparent; color: #000; font-weight: 700;
+      border-color: transparent;
+      color: #000;
     }
     .action-btn:hover { transform: translateY(-2px); }
-    .action-btn.primary:hover { box-shadow: 0 6px 22px rgba(0,229,255,.3); }
+    .action-btn.primary:hover { box-shadow: 0 6px 20px rgba(0,229,255,.3); }
+
     .again-btn {
-      width: 100%; margin-top: .8rem; padding: .65rem; background: none;
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      color: var(--muted); font-family: 'IBM Plex Sans Arabic', sans-serif;
-      font-size: .85rem; cursor: pointer; transition: all .2s;
+      width: 100%;
+      margin-top: 1rem;
+      padding: .7rem;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: all .2s;
     }
     .again-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── Footer ── */
+    /* ─── Error ──────────────────────────────────────────────── */
+    .error-box {
+      display: none;
+      margin-top: 1rem;
+      padding: .9rem 1.1rem;
+      background: rgba(255,77,109,.08);
+      border: 1px solid rgba(255,77,109,.3);
+      border-radius: 10px;
+      color: var(--danger);
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+    .error-box.show { display: block; }
+
+    /* ─── Footer ─────────────────────────────────────────────── */
     .footer {
-      text-align: center; font-size: .7rem; color: var(--muted);
-      font-family: 'Space Mono', monospace; animation: fadeUp .6s .3s ease both;
+      text-align: center;
+      font-size: .75rem;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
     }
 
-    /* ── Keyframes ── */
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+    /* ─── Animations ─────────────────────────────────────────── */
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    @keyframes spin  { to { transform: rotate(360deg); } }
+    @keyframes breathe { 0%,100%{opacity:.4} 50%{opacity:1} }
     @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0);    }
     }
-    @keyframes slideIn {
-      from { opacity:0; transform:scale(.94) translateY(10px); }
-      to   { opacity:1; transform:scale(1)   translateY(0); }
-    }
-    .card-slide { animation: slideIn .45s cubic-bezier(.4,0,.2,1) both; }
+    .card { animation: fadeUp .5s ease both; }
+    .header { animation: fadeUp .5s .1s ease both; }
   </style>
 </head>
 <body>
 
-<div class="ambient"></div>
 <div class="grid-bg"></div>
 
 <main class="page">
 
-  <!-- Header -->
+  <!-- ── Header ── -->
   <header class="header">
-    <div class="client-badge">
-      <span class="dot"></span>
-      <span id="badge-client-name">جاري التحميل...</span>
-    </div>
+    <div class="badge"><span></span> n8n Automation</div>
     <h1>دمج الصوت<br>مع <em>الفيديو</em></h1>
-    <p>ارفع ملف الصوت وسنتولى الدمج تلقائياً</p>
+    <p>ارفع ملف الصوت وسنتولى الباقي تلقائياً</p>
   </header>
 
-  <!-- ══ UPLOAD ══ -->
+  <!-- ── Upload Card ── -->
   <div class="card" id="upload-section">
-    <div class="drop-zone" id="drop-zone">
-      <input type="file" id="audio-file"
-        accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.wma,.opus" />
-      <div class="icon-wrap">🎵</div>
-      <div class="label">اسحب ملف الصوت هنا</div>
-      <div class="sublabel">أو انقر للاختيار — MP3, WAV, M4A, AAC, OGG …</div>
-      <div class="size-note">الحد الأقصى: <span id="max-size-label">50</span> MB</div>
+
+    <!-- N8N Webhook URL Config -->
+    <div class="config-row" style = "display:none">
+      <label>WEBHOOK</label>
+      <input
+        type="url"
+        id="webhook-url"
+        placeholder="https://tasneemahmed-n8n.hf.space/webhook/4a9b06b2-24c6-47fe-bf9c-3167c63e143e"
+        autocomplete="off"
+      />
     </div>
 
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="drop-zone">
+      <input
+        type="file"
+        id="audio-file"
+        accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.wma,.opus,.mp4"
+      />
+      <span class="icon">🎵</span>
+      <div class="label">اسحب ملف الصوت هنا</div>
+      <div class="sublabel">أو انقر للاختيار — جميع صيغ الصوت مدعومة</div>
+    </div>
+
+    <!-- File Info -->
     <div class="file-info" id="file-info">
       <div class="file-icon">🎵</div>
       <div>
@@ -448,582 +496,288 @@
       <button class="remove-btn" id="remove-btn" title="إزالة">✕</button>
     </div>
 
-    <div class="error-box" id="error-box">
-      <div class="error-code" id="error-code"></div>
-      <div id="error-message"></div>
-    </div>
+    <!-- Error Box -->
+    <div class="error-box" id="error-box"></div>
 
+    <!-- Submit -->
     <button class="submit-btn" id="submit-btn" disabled>
-      <span>🚀</span><span>ابدأ المعالجة</span>
+      <span>🚀</span>
+      <span>ابدأ المعالجة</span>
     </button>
   </div>
 
-  <!-- ══ LOADING ══ -->
+  <!-- ── Loading Card ── -->
   <div class="card" id="loading-section">
-
-    <!-- أمواج صوتية -->
-    <div class="waveform">
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div><div class="wave-bar"></div>
-      <div class="wave-bar"></div>
+    <div class="loader-wrap">
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-ring"></div>
+      <div class="loader-core"></div>
     </div>
-
-    <!-- عنوان ديناميكي -->
-    <div class="loading-title" id="loading-title">جاري رفع الملف…</div>
-
-    <!-- شريط التقدم -->
-    <div class="progress-wrap">
-      <div class="progress-header">
-        <span class="progress-label" id="progress-label">تحضير الطلب</span>
-        <div class="progress-right">
-          <span class="elapsed-time" id="elapsed-time">00:00</span>
-          <span class="progress-pct" id="progress-pct">0%</span>
-        </div>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-      </div>
+    <div class="loading-title">جاري المعالجة…</div>
+    <div class="loading-sub">لا تغلق هذه الصفحة</div>
+    <div class="progress-steps" id="steps-container">
+      <div class="step active" id="step-1"><div class="step-dot"></div> رفع ملف الصوت</div>
+      <div class="step"        id="step-2"><div class="step-dot"></div> تنزيل الفيديو  </div>
+      <div class="step"        id="step-3"><div class="step-dot"></div> دمج الصوت والفيديو  </div>
+      <div class="step"        id="step-4"><div class="step-dot"></div> تجهيز الملف النهائي</div>
     </div>
-
-    <!-- الخطوات -->
-    <div class="steps" id="steps-container">
-
-      <div class="step active" id="step-1">
-        <div class="step-icon" id="s1-icon">📤</div>
-        <div class="step-body">
-          <div class="step-title">رفع ملف الصوت</div>
-          <div class="step-detail" id="s1-detail">جاري إرسال الملف إلى السيرفر…</div>
-        </div>
-        <div class="step-spinner"><span></span><span></span><span></span></div>
-        <div class="step-duration" id="s1-dur"></div>
-      </div>
-
-      <div class="step waiting" id="step-2">
-        <div class="step-icon" id="s2-icon">🔐</div>
-        <div class="step-body">
-          <div class="step-title">التحقق من صلاحياتك</div>
-          <div class="step-detail" id="s2-detail">مطابقة بيانات العميل مع قاعدة البيانات</div>
-        </div>
-        <div class="step-spinner"><span></span><span></span><span></span></div>
-        <div class="step-duration" id="s2-dur"></div>
-      </div>
-
-      <div class="step waiting" id="step-3">
-        <div class="step-icon" id="s3-icon">☁️</div>
-        <div class="step-body">
-          <div class="step-title">تحميل الفيديو الخاص بك</div>
-          <div class="step-detail" id="s3-detail">جاري تنزيل الفيديو من Google Drive…</div>
-        </div>
-        <div class="step-spinner"><span></span><span></span><span></span></div>
-        <div class="step-duration" id="s3-dur"></div>
-      </div>
-
-      <div class="step waiting" id="step-4">
-        <div class="step-icon" id="s4-icon">⚙️</div>
-        <div class="step-body">
-          <div class="step-title">دمج الصوت مع الفيديو</div>
-          <div class="step-detail" id="s4-detail">FFmpeg يعالج الملفين…</div>
-        </div>
-        <div class="step-spinner"><span></span><span></span><span></span></div>
-        <div class="step-duration" id="s4-dur"></div>
-      </div>
-
-      <div class="step waiting" id="step-5">
-        <div class="step-icon" id="s5-icon">📦</div>
-        <div class="step-body">
-          <div class="step-title">تجهيز الملف النهائي</div>
-          <div class="step-detail" id="s5-detail">ضغط الفيديو وإعداده للإرسال…</div>
-        </div>
-        <div class="step-spinner"><span></span><span></span><span></span></div>
-        <div class="step-duration" id="s5-dur"></div>
-      </div>
-
-    </div>
-
-    <!-- تلميحات دوّارة -->
-    <div class="tip-box">
-      <span class="tip-icon" id="tip-icon">💡</span>
-      <span class="tip-text" id="tip-text">قد تستغرق العملية بضع دقائق حسب حجم الملف، يُرجى الانتظار.</span>
-    </div>
-
   </div>
 
-  <!-- ══ RESULT ══ -->
+  <!-- ── Result Card ── -->
   <div class="card" id="result-section">
     <div class="result-header">
-      <div class="result-badge">✓ اكتمل بنجاح</div>
-      <div class="result-meta" id="result-meta"></div>
+      <div class="result-badge">اكتملت المعالجة</div>
     </div>
+
     <div class="video-wrapper">
       <video id="result-video" controls playsinline></video>
     </div>
+
     <div class="result-actions">
-      <button class="action-btn" onclick="document.getElementById('result-video').play()">
+      <button class="action-btn" id="watch-btn" onclick="document.getElementById('result-video').play()">
         ▶ مشاهدة
       </button>
       <a class="action-btn primary" id="download-btn" download="output_video.mp4">
-        ⬇ تنزيل الفيديو
+        ⬇ تنزيل
       </a>
     </div>
+
     <button class="again-btn" id="again-btn">↺ معالجة ملف آخر</button>
   </div>
 
-  <footer class="footer">Powered by n8n + FFmpeg &nbsp;·&nbsp; HF Space</footer>
+  <footer class="footer">Powered by n8n + FFmpeg</footer>
 
 </main>
 
 <script>
-// ════════════════════════════════════════════════════════════
-// ⚙️  CONFIG — غيّر هذه القيم فقط لكل عميل
-// ════════════════════════════════════════════════════════════
-const CONFIG = {
-  CLIENT_ID:        'client_01',
-  API_KEY:          'sk_client01_11555514',
-  CLIENT_NAME:      'العميل الأول',
-  WEBHOOK_URL:      'https://tasneemahmed-n8n.hf.space/webhook/8954b6f0-5c48-4281-8eb8-e73d110e0c41',
-  MAX_FILE_SIZE_MB: 50,
-};
-// ════════════════════════════════════════════════════════════
+  // ─── DOM refs ────────────────────────────────────────────────
+  const dropZone     = document.getElementById('drop-zone');
+  const fileInput    = document.getElementById('audio-file');
+  const fileInfo     = document.getElementById('file-info');
+  const fileNameTxt  = document.getElementById('file-name-text');
+  const fileSizeTxt  = document.getElementById('file-size-text');
+  const removeBtn    = document.getElementById('remove-btn');
+  const submitBtn    = document.getElementById('submit-btn');
+  const uploadSec    = document.getElementById('upload-section');
+  const loadingSec   = document.getElementById('loading-section');
+  const resultSec    = document.getElementById('result-section');
+  const errorBox     = document.getElementById('error-box');
+  const resultVideo  = document.getElementById('result-video');
+  const downloadBtn  = document.getElementById('download-btn');
+  const againBtn     = document.getElementById('again-btn');
+  const webhookInput = document.getElementById('webhook-url');
 
-const ERROR_MESSAGES = {
-  CLIENT_NOT_FOUND:    'العميل غير موجود في النظام',
-  INVALID_API_KEY:     'مفتاح API غير صحيح — تواصل مع المشرف',
-  CLIENT_DISABLED:     'حساب العميل معطّل — تواصل مع الإدارة',
-  RATE_LIMIT_EXCEEDED: 'تجاوزت الحد اليومي المسموح به، حاول غداً',
-  MISSING_CLIENT_ID:   'معرف العميل مفقود في الطلب',
-  MISSING_API_KEY:     'مفتاح API مفقود في الطلب',
-  MISSING_AUDIO_FILE:  'لم يتم إرسال ملف الصوت',
-  VIDEO_URL_MISSING:   'رابط الفيديو غير مضبوط لهذا العميل',
-  FFMPEG_FAILED:       'فشلت عملية الدمج — حاول مرة أخرى',
-};
+  // ─── Persist webhook URL ─────────────────────────────────────
+  const STORAGE_KEY = 'n8n_webhook_url';
+  const savedUrl = localStorage.getItem(STORAGE_KEY);
+  if (savedUrl) webhookInput.value = savedUrl;
+  webhookInput.addEventListener('change', () => {
+    localStorage.setItem(STORAGE_KEY, webhookInput.value.trim());
+  });
 
-/* ── DOM ── */
-const dropZone    = document.getElementById('drop-zone');
-const fileInput   = document.getElementById('audio-file');
-const fileInfo    = document.getElementById('file-info');
-const fileNameTxt = document.getElementById('file-name-text');
-const fileSizeTxt = document.getElementById('file-size-text');
-const removeBtn   = document.getElementById('remove-btn');
-const submitBtn   = document.getElementById('submit-btn');
-const uploadSec   = document.getElementById('upload-section');
-const loadingSec  = document.getElementById('loading-section');
-const resultSec   = document.getElementById('result-section');
-const errorBox    = document.getElementById('error-box');
-const errorCode   = document.getElementById('error-code');
-const errorMsgEl  = document.getElementById('error-message');
-const resultVideo = document.getElementById('result-video');
-const downloadBtn = document.getElementById('download-btn');
-const againBtn    = document.getElementById('again-btn');
-const resultMeta  = document.getElementById('result-meta');
+  // ─── File handling ───────────────────────────────────────────
+  let selectedFile = null;
 
-/* ── Init ── */
-document.getElementById('badge-client-name').textContent = CONFIG.CLIENT_NAME;
-document.getElementById('max-size-label').textContent    = CONFIG.MAX_FILE_SIZE_MB;
-document.title = `دمج الصوت — ${CONFIG.CLIENT_NAME}`;
-
-/* ── Helpers ── */
-function fmt(b) {
-  if (b < 1024)    return b + ' B';
-  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-  return (b / 1048576).toFixed(2) + ' MB';
-}
-function showError(code, msg) {
-  errorCode.textContent  = code ? `[${code}]` : '';
-  errorMsgEl.textContent = msg || ERROR_MESSAGES[code] || 'حدث خطأ غير متوقع';
-  errorBox.classList.add('show');
-}
-function hideError() {
-  errorBox.classList.remove('show');
-  errorCode.textContent = errorMsgEl.textContent = '';
-}
-
-/* ── File handling ── */
-let selectedFile = null;
-function setFile(f) {
-  if (!f) return;
-  if (f.size / 1048576 > CONFIG.MAX_FILE_SIZE_MB) {
-    showError('FILE_TOO_LARGE', `الملف (${(f.size/1048576).toFixed(1)} MB) يتجاوز الحد (${CONFIG.MAX_FILE_SIZE_MB} MB)`);
-    return;
+  function formatBytes(bytes) {
+    if (bytes < 1024)       return bytes + ' B';
+    if (bytes < 1048576)    return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1048576).toFixed(2) + ' MB';
   }
-  selectedFile = f;
-  fileNameTxt.textContent = f.name;
-  fileSizeTxt.textContent = fmt(f.size);
-  fileInfo.classList.add('show');
-  submitBtn.disabled = false;
-  hideError();
-}
-function clearFile() {
-  selectedFile = null;
-  fileInput.value = '';
-  fileInfo.classList.remove('show');
-  submitBtn.disabled = true;
-}
-fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
-removeBtn.addEventListener('click',  (e) => { e.preventDefault(); clearFile(); });
-dropZone.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', (e) => {
-  e.preventDefault(); dropZone.classList.remove('dragover');
-  if (e.dataTransfer?.files?.[0]) setFile(e.dataTransfer.files[0]);
-});
 
-/* ── Section visibility ── */
-function showSection(name) {
-  uploadSec.style.display  = name === 'upload'  ? '' : 'none';
-  loadingSec.style.display = name === 'loading' ? '' : 'none';
-  resultSec.style.display  = name === 'result'  ? '' : 'none';
-  if (name === 'result') resultSec.classList.add('card-slide');
-}
-
-/* ════════════════════════════════════════════════════════════
-   🎬 LOADING ENGINE — منظومة الحالة الحيّة
-════════════════════════════════════════════════════════════ */
-
-/* ── تعريف الخطوات ── */
-const STEPS = [
-  {
-    n: 1, icon: '📤',
-    label: 'رفع ملف الصوت',
-    detail: 'جاري إرسال الملف إلى السيرفر…',
-    startAt: 0,    doneAt: 3200,
-    pFrom: 0,  pTo: 18,
-    titles: ['جاري رفع ملفك الصوتي…', 'يُرسَل الملف الآن…'],
-  },
-  {
-    n: 2, icon: '🔐',
-    label: 'التحقق من صلاحياتك',
-    detail: 'قراءة بيانات العميل من Sheets…',
-    startAt: 3200,  doneAt: 7000,
-    pFrom: 18, pTo: 32,
-    titles: ['التحقق من هويتك…', 'مطابقة API Key…'],
-  },
-  {
-    n: 3, icon: '☁️',
-    label: 'تحميل الفيديو الخاص بك',
-    detail: 'جاري تنزيل الفيديو من Google Drive…',
-    startAt: 7000,  doneAt: 16000,
-    pFrom: 32, pTo: 56,
-    titles: [
-      'جاري الاتصال بـ Google Drive…',
-      'يُنزَّل فيديوك من السحابة…',
-      'تحميل الفيديو — رجاءً انتظر…',
-    ],
-  },
-  {
-    n: 4, icon: '⚙️',
-    label: 'دمج الصوت مع الفيديو',
-    detail: 'FFmpeg يدمج الملفين فريماً بفريم…',
-    startAt: 16000, doneAt: 36000,
-    pFrom: 56, pTo: 88,
-    titles: [
-      'FFmpeg يبدأ المعالجة…',
-      'دمج الصوت مع كل فريم…',
-      'مزامنة الصوت والصورة…',
-      'اقتربنا… FFmpeg يعمل بجد! 💪',
-      'تقريباً جاهز…',
-    ],
-  },
-  {
-    n: 5, icon: '📦',
-    label: 'تجهيز الملف النهائي',
-    detail: 'ضغط الفيديو وإعداده للإرسال…',
-    startAt: 36000, doneAt: 48000,
-    pFrom: 88, pTo: 97,
-    titles: [
-      'تجهيز الملف النهائي…',
-      'ضغط الفيديو…',
-      'يُرسَل إليك الآن… 🎉',
-    ],
-  },
-];
-
-/* ── تلميحات دوّارة ── */
-const TIPS = [
-  { i: '☕', t: 'يمكنك تناول قهوتك! عادةً تستغرق العملية من دقيقة إلى ثلاث دقائق.' },
-  { i: '📱', t: 'لا تُغلق هذه الصفحة أو المتصفح حتى يظهر الفيديو.' },
-  { i: '🎬', t: 'FFmpeg يدمج الصوت مع كل إطار بدقة عالية لضمان المزامنة.' },
-  { i: '☁️', t: 'يُحمَّل الفيديو مباشرةً من Google Drive — لا يُحتفظ بنسخ بعد ذلك.' },
-  { i: '⚡', t: 'السيرفر يعالج طلبك بأقصى طاقته، شكراً لصبرك!' },
-  { i: '🔒', t: 'بياناتك خاصة — يُحذف كل ملف فور إرساله إليك.' },
-  { i: '🎵', t: 'كلما كان ملف الصوت أصغر، كانت المعالجة أسرع.' },
-  { i: '🌐', t: 'المعالجة تتم بالكامل على السيرفر — جهازك في راحة تامة!' },
-  { i: '✨', t: 'ستحصل على ملف MP4 عالي الجودة جاهز للمشاركة فوراً.' },
-  { i: '📊', t: 'تتم معالجة الفيديو بضبط دقيق للـ bitrate لأفضل توازن بين الجودة والحجم.' },
-];
-
-/* ── متغيرات الحالة ── */
-let _elapsedInterval = null;
-let _tipInterval     = null;
-let _prgInterval     = null;
-let _stepTimers      = [];
-let _startTime       = 0;
-let _curStep         = 0;
-let _stepStarts      = {};
-let _curPct          = 0;
-let _tipIdx          = 0;
-
-/* ── عداد الوقت المنقضي ── */
-function _startElapsed() {
-  const el = document.getElementById('elapsed-time');
-  _elapsedInterval = setInterval(() => {
-    const s = Math.floor((Date.now() - _startTime) / 1000);
-    el.textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-  }, 500);
-}
-
-/* ── شريط التقدم الناعم ── */
-function _animatePct(target, durationMs) {
-  if (_prgInterval) clearInterval(_prgInterval);
-  const from  = _curPct;
-  const delta = target - from;
-  const steps = Math.max(Math.floor(durationMs / 60), 1);
-  let   tick  = 0;
-  _prgInterval = setInterval(() => {
-    tick++;
-    const ease = 1 - Math.pow(1 - tick / steps, 3); // easeOutCubic
-    _curPct = from + delta * ease;
-    const pct = Math.min(Math.round(_curPct), 100);
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-pct').textContent  = pct + '%';
-    if (tick >= steps) { clearInterval(_prgInterval); _prgInterval = null; _curPct = target; }
-  }, 60);
-}
-
-/* ── عنوان + label يتغيران بخفة ── */
-function _setTitle(txt) {
-  const el = document.getElementById('loading-title');
-  el.style.opacity = '0';
-  setTimeout(() => { el.textContent = txt; el.style.opacity = '1'; }, 350);
-}
-function _setLabel(txt) {
-  const el = document.getElementById('progress-label');
-  el.style.opacity = '0';
-  setTimeout(() => { el.textContent = txt; el.style.opacity = '1'; }, 300);
-}
-
-/* ── تفعيل خطوة ── */
-function _activateStep(n) {
-  _curStep = n;
-  _stepStarts[n] = Date.now();
-  const def = STEPS[n - 1];
-
-  STEPS.forEach(s => {
-    const el = document.getElementById(`step-${s.n}`);
-    el.classList.remove('active', 'done', 'waiting');
-    document.getElementById(`s${s.n}-icon`).textContent = s.n < n ? '✓' : s.icon;
-    if (s.n < n) el.classList.add('done');
-    else if (s.n === n) el.classList.add('active');
-    else el.classList.add('waiting');
-  });
-
-  _setTitle(def.titles[0]);
-  _setLabel(def.label);
-
-  // شريط يتحرك من pFrom ثم يكمل بشكل تدريجي
-  _animatePct(def.pFrom, 500);
-  const stepDur = def.doneAt - def.startAt;
-  setTimeout(() => _animatePct(def.pFrom + (def.pTo - def.pFrom) * 0.75, stepDur * 0.65), 700);
-
-  // عناوين دوّارة داخل الخطوة
-  def.titles.forEach((t, i) => {
-    if (i === 0) return;
-    const delay = (stepDur / def.titles.length) * i;
-    const tid = setTimeout(() => { if (_curStep === n) _setTitle(t); }, delay);
-    _stepTimers.push(tid);
-  });
-}
-
-/* ── إكمال خطوة ── */
-function _doneStep(n) {
-  const el   = document.getElementById(`step-${n}`);
-  const dur  = document.getElementById(`s${n}-dur`);
-  const icon = document.getElementById(`s${n}-icon`);
-  el.classList.remove('active');
-  el.classList.add('done');
-  icon.textContent = '✓';
-  if (_stepStarts[n]) {
-    dur.textContent = `${((Date.now() - _stepStarts[n]) / 1000).toFixed(1)}s`;
+  function setFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    fileNameTxt.textContent = file.name;
+    fileSizeTxt.textContent = formatBytes(file.size);
+    fileInfo.classList.add('show');
+    submitBtn.disabled = false;
+    hideError();
   }
-}
 
-/* ── دورة الخطوات بالتوقيتات المحددة ── */
-function _runStepCycle() {
-  _activateStep(1);
-  STEPS.forEach((s, i) => {
-    if (i === 0) return;
-    const tid = setTimeout(() => {
-      _doneStep(s.n - 1);
-      setTimeout(() => _activateStep(s.n), 180);
-    }, s.startAt);
-    _stepTimers.push(tid);
+  function clearFile() {
+    selectedFile = null;
+    fileInput.value = '';
+    fileInfo.classList.remove('show');
+    submitBtn.disabled = true;
+  }
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) setFile(fileInput.files[0]);
   });
-}
 
-/* ── تلميحات كل 8 ثوانٍ ── */
-function _runTips() {
-  _applyTip(TIPS[0]);
-  _tipInterval = setInterval(() => {
-    _tipIdx = (_tipIdx + 1) % TIPS.length;
-    const tipTextEl = document.getElementById('tip-text');
-    tipTextEl.classList.add('fade-out');
-    setTimeout(() => {
-      _applyTip(TIPS[_tipIdx]);
-      tipTextEl.classList.remove('fade-out');
-    }, 460);
-  }, 8000);
-}
-function _applyTip(tip) {
-  document.getElementById('tip-icon').textContent = tip.i;
-  document.getElementById('tip-text').textContent = tip.t;
-}
+  removeBtn.addEventListener('click', (e) => { e.preventDefault(); clearFile(); });
 
-/* ── إيقاف كل شيء ── */
-function _stopAll() {
-  clearInterval(_elapsedInterval);
-  clearInterval(_tipInterval);
-  clearInterval(_prgInterval);
-  _stepTimers.forEach(clearTimeout);
-  _stepTimers = [];
-}
+  // Drag & Drop
+  dropZone.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer?.files?.[0];
+    if (file) setFile(file);
+  });
 
-/* ── إنهاء فوري عند وصول الرد ── */
-function _finalizeAll() {
-  _stopAll();
-  // أكمل كل الخطوات المتبقية
-  for (let n = _curStep; n <= 5; n++) _doneStep(n);
-  _animatePct(100, 600);
-  _setLabel('✅ اكتملت المعالجة!');
-  _setTitle('✅ تم بنجاح! جاري عرض الفيديو…');
-  const elEl = document.getElementById('elapsed-time');
-  elEl.style.color = 'var(--success)';
-  elEl.style.transition = 'color .5s';
-}
+  // ─── Error helpers ───────────────────────────────────────────
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+  }
+  function hideError() {
+    errorBox.classList.remove('show');
+    errorBox.textContent = '';
+  }
 
-/* ════════════════════════════════════════════════════════════
-   SUBMIT
-════════════════════════════════════════════════════════════ */
-submitBtn.addEventListener('click', async () => {
-  hideError();
-  if (!selectedFile) { showError('', 'الرجاء اختيار ملف صوت أولاً'); return; }
+  // ─── Steps animation ─────────────────────────────────────────
+  const STEP_DELAYS = [0, 4000, 9000, 16000]; // ms after submit
+  let stepTimers = [];
 
-  /* ── بدء شاشة الانتظار ── */
-  showSection('loading');
-  _startTime = Date.now();
-  _curStep = 0; _curPct = 0; _stepStarts = {}; _tipIdx = 0;
+  function activateSteps() {
+    // mark step 1 active immediately
+    STEP_DELAYS.forEach((delay, i) => {
+      const t = setTimeout(() => {
+        const all = document.querySelectorAll('.step');
+        all.forEach((s, j) => {
+          if (j < i)  { s.classList.remove('active'); s.classList.add('done'); }
+          if (j === i){ s.classList.add('active'); s.classList.remove('done'); }
+        });
+      }, delay);
+      stepTimers.push(t);
+    });
+  }
 
-  // إعادة ضبط UI
-  document.getElementById('progress-fill').style.width = '0%';
-  document.getElementById('progress-pct').textContent  = '0%';
-  document.getElementById('elapsed-time').textContent  = '00:00';
-  document.getElementById('elapsed-time').style.color  = '';
+  function clearStepTimers() {
+    stepTimers.forEach(clearTimeout);
+    stepTimers = [];
+    document.querySelectorAll('.step').forEach(s => {
+      s.classList.remove('active','done');
+    });
+    document.querySelector('.step').classList.add('active');
+  }
 
-  _startElapsed();
-  _runStepCycle();
-  _runTips();
+  // ─── Show / hide sections ────────────────────────────────────
+  function showSection(name) {
+    uploadSec .classList.toggle('show', name === 'upload');
+    loadingSec.classList.toggle('show', name === 'loading');
+    resultSec .classList.toggle('show', name === 'result');
 
-  /* ── الطلب ── */
-  const fd = new FormData();
-  fd.append('audio_file', selectedFile, selectedFile.name);
-  fd.append('client_id',  CONFIG.CLIENT_ID);
-  fd.append('api_key',    CONFIG.API_KEY);
+    uploadSec .style.display  = name === 'upload'  ? '' : 'none';
+    loadingSec.style.display  = name === 'loading' ? '' : 'none';
+    resultSec .style.display  = name === 'result'  ? '' : 'none';
+  }
 
-  try {
-    const res = await fetch(CONFIG.WEBHOOK_URL, { method: 'POST', body: fd });
+  // ─── Submit ──────────────────────────────────────────────────
+  submitBtn.addEventListener('click', async () => {
+    hideError();
 
-    _finalizeAll(); // الرد وصل — أوقف التقريب وأظهر النجاح
-
-    /* ── قراءة الرد كـ buffer مرة واحدة ── */
-    // نقرأ الـ body مرة واحدة كـ ArrayBuffer حتى لا يُستهلك مرتين
-    const rawBuffer = await res.arrayBuffer();
-    const rawText   = new TextDecoder().decode(rawBuffer);
-    const ct        = res.headers.get('Content-Type') || '';
-
-    /* ── أخطاء HTTP ── */
-    if (!res.ok) {
-      let code = 'SERVER_ERROR', msg = `خطأ من السيرفر (${res.status})`;
-      if (rawText.trim()) {
-        // حاول تحليل JSON إن وُجد
-        if (ct.includes('application/json') || rawText.trim().startsWith('{')) {
-          try {
-            const d = JSON.parse(rawText);
-            code = d.error      || code;
-            msg  = d.message_ar || d.message || d.error || msg;
-          } catch(_) { msg += `: ${rawText.slice(0, 200)}`; }
-        } else {
-          msg += `: ${rawText.slice(0, 200)}`;
-        }
-      }
-      console.error('[VVM] Server error:', res.status, rawText.slice(0,300));
-      setTimeout(() => { showSection('upload'); showError(code, ERROR_MESSAGES[code] || msg); }, 500);
+    const webhookUrl = "https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4";
+    if (!webhookUrl) {
+      showError('⚠️ الرجاء إدخال رابط Webhook الخاص بـ n8n أولاً');
+      return;
+    }
+    if (!selectedFile) {
+      showError('⚠️ الرجاء اختيار ملف صوت أولاً');
       return;
     }
 
-    /* ── رد ناجح ── */
-    let blob;
+    // Switch to loading view
+    showSection('loading');
+    activateSteps();
 
-    if (ct.includes('video') || ct.includes('octet-stream')) {
-      // رد ثنائي مباشر
-      blob = new Blob([rawBuffer], { type: 'video/mp4' });
+    // Build FormData — field name must match what n8n Webhook expects
+    const formData = new FormData();
+    formData.append('audio_file', selectedFile, selectedFile.name);
 
-    } else if (ct.includes('application/json') || rawText.trim().startsWith('{')) {
-      // رد JSON — تحليل آمن
-      if (!rawText.trim()) throw new Error('السيرفر أرجع رداً فارغاً — حاول مرة أخرى');
-      let data;
-      try { data = JSON.parse(rawText); }
-      catch(e) { throw new Error(`الرد غير صالح من السيرفر: ${rawText.slice(0,100)}`); }
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        body: formData,
+        // No Content-Type header — browser sets it with boundary automatically
+      });
 
-      if (data.error) {
-        setTimeout(() => { showSection('upload'); showError(data.error, ERROR_MESSAGES[data.error] || data.message_ar); }, 500);
-        return;
+      clearStepTimers();
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`خطأ من السيرفر (${response.status}): ${errText.slice(0, 200)}`);
       }
-      const b64 = data.video_base64 || data.data || data.output_video;
-      if (b64) {
-        const chars = atob(b64), arr = new Uint8Array(chars.length);
-        for (let i = 0; i < chars.length; i++) arr[i] = chars.charCodeAt(i);
-        blob = new Blob([arr], { type: 'video/mp4' });
-      } else throw new Error('لم يُعثر على الفيديو في الرد — تحقق من إعداد الـ workflow');
 
-    } else {
-      // أي نوع تاني — تعامل معاه كـ binary
-      blob = new Blob([rawBuffer], { type: 'video/mp4' });
+      // Check content type
+      const contentType = response.headers.get('Content-Type') || '';
+
+      let videoBlob;
+
+      if (contentType.includes('video') || contentType.includes('octet-stream')) {
+        // Direct binary response
+        videoBlob = await response.blob();
+      } else if (contentType.includes('application/json')) {
+        // JSON response — might contain base64 video
+        const data = await response.json();
+
+        // Try common keys
+        const b64 = data.video_base64 || data.data || data.output_video;
+        if (b64) {
+          const byteChars = atob(b64);
+          const byteNums  = new Uint8Array(byteChars.length);
+          for (let i = 0; i < byteChars.length; i++) byteNums[i] = byteChars.charCodeAt(i);
+          videoBlob = new Blob([byteNums], { type: 'video/mp4' });
+        } else if (data.url || data.download_url) {
+          // Redirect URL
+          const link = document.createElement('a');
+          link.href     = data.url || data.download_url;
+          link.download = 'output_video.mp4';
+          link.target   = '_blank';
+          downloadBtn.href = link.href;
+          resultVideo.src  = link.href;
+          showSection('result');
+          return;
+        } else {
+          throw new Error('تعذر العثور على الفيديو في الرد. تأكد من إعداد Respond to Webhook بشكل صحيح.');
+        }
+      } else {
+        // Try as binary anyway
+        videoBlob = await response.blob();
+      }
+
+      // Mark all steps done
+      document.querySelectorAll('.step').forEach(s => {
+        s.classList.remove('active');
+        s.classList.add('done');
+      });
+
+      // Create object URL
+      const videoUrl = URL.createObjectURL(videoBlob);
+      resultVideo.src  = videoUrl;
+      downloadBtn.href = videoUrl;
+
+      // Revoke old URLs on cleanup
+      downloadBtn.onclick = null;
+
+      showSection('result');
+
+    } catch (err) {
+      clearStepTimers();
+      showSection('upload');
+      showError('❌ ' + (err.message || 'حدث خطأ غير متوقع'));
+      console.error(err);
     }
+  });
 
-    if (!blob || blob.size === 0) throw new Error('الملف المستلم فارغ — حاول مرة أخرى');
+  // ─── Again button ────────────────────────────────────────────
+  againBtn.addEventListener('click', () => {
+    // Revoke previous video URL
+    if (resultVideo.src) URL.revokeObjectURL(resultVideo.src);
+    resultVideo.src  = '';
+    downloadBtn.href = '#';
 
-    const elapsed = ((Date.now() - _startTime) / 1000).toFixed(1);
-    const sizeMB  = (blob.size / 1048576).toFixed(2);
-    const url     = URL.createObjectURL(blob);
-    resultVideo.src  = url;
-    downloadBtn.href = url;
-    resultMeta.textContent = `${sizeMB} MB · ${elapsed}s`;
-
-    setTimeout(() => showSection('result'), 750);
-
-  } catch (err) {
-    _stopAll();
+    clearFile();
+    hideError();
     showSection('upload');
-    showError('REQUEST_FAILED',
-      (err.message || '').startsWith('Failed to fetch')
-        ? 'تعذر الاتصال بالسيرفر — تحقق من اتصالك بالإنترنت'
-        : (err.message || 'حدث خطأ غير متوقع')
-    );
-    console.error('[VVM]', err);
-  }
-});
+  });
 
-/* ── Again ── */
-againBtn.addEventListener('click', () => {
-  if (resultVideo.src?.startsWith('blob:')) URL.revokeObjectURL(resultVideo.src);
-  resultVideo.src = ''; downloadBtn.href = '#'; resultMeta.textContent = '';
-  clearFile(); hideError(); showSection('upload');
-});
-
-showSection('upload');
+  // ─── Init ────────────────────────────────────────────────────
+  showSection('upload');
 </script>
+
 </body>
 </html>
