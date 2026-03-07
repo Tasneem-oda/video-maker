@@ -568,7 +568,7 @@
   const againBtn       = document.getElementById('again-btn');
   const webhookInput   = document.getElementById('webhook-url');
 
-  // ─── Wake Lock & Exit Protection Vars ────────────────────────
+  // ─── Wake Lock Var ───────────────────────────────────────────
   let wakeLock = null;
 
   // ─── Persist webhook URL ─────────────────────────────────────
@@ -576,7 +576,6 @@
   const savedUrl = localStorage.getItem(STORAGE_KEY);
   if (savedUrl) webhookInput.value = savedUrl;
   
-  // تحديث الرابط الجديد الذي وضعتيه في الكود السابق
   if (!webhookInput.value) {
       webhookInput.value = "https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4";
   }
@@ -628,17 +627,30 @@
   });
 
   // ─── Error helpers ───────────────────────────────────────────
-  function showError(msg) {
+  function showError(msg, isPermanent = false) {
     errorBox.textContent = msg;
     errorBox.classList.add('show');
+    // إذا كان خطأ دائماً (أحمر)، وإذا تحذير مؤقت (أصفر)
+    if(isPermanent) {
+        errorBox.style.borderColor = 'rgba(255,77,109,.3)';
+        errorBox.style.color = 'var(--danger)';
+    } else {
+        // ستايل التحذير (إنترنت مقطوع)
+        errorBox.style.borderColor = '#ffd700';
+        errorBox.style.color = '#ffd700';
+    }
   }
+
   function hideError() {
     errorBox.classList.remove('show');
     errorBox.textContent = '';
+    // إعادة الألوان للافتراضي
+    errorBox.style.borderColor = '';
+    errorBox.style.color = '';
   }
 
   // ─── Steps animation ─────────────────────────────────────────
-  const STEP_DELAYS = [0, 5000, 15000, 30000]; // تم تعديل التوقيت ليصبح أكثر واقعية
+  const STEP_DELAYS = [0, 5000, 15000, 30000];
   let stepTimers = [];
 
   function activateSteps() {
@@ -696,13 +708,22 @@
     }
   }
 
-  // ─── Exit Protection (BeforeUnload) ──────────────────────────
+  // ─── Network Status Handlers (الدوال الجديدة) ────────────────
+  function handleOffline() {
+      loadingSec.style.opacity = '0.5'; // تعتيم الشاشة قليلاً
+      showError('⚠️ انقطع الاتصال بالإنترنت! يرجى إعادة الاتصال فوراً لاستكمال العملية.', false);
+  }
+
+  function handleOnline() {
+      loadingSec.style.opacity = '1'; // إعادة السطوع
+      hideError(); // إخفاء التحذير
+      // يمكن إضافة رسالة صغيرة: "تمت إعادة الاتصال"
+  }
+
+  // ─── Exit Protection ─────────────────────────────────────────
   function enableExitProtection() {
     window.onbeforeunload = function (e) {
       e = e || window.event;
-      // للمتصفحات القديمة
-      if (e) { e.returnValue = 'جاري المعالجة... هل أنت متأكد من الخروج؟'; }
-      // للمتصفحات الحديثة
       return 'جاري المعالجة... هل أنت متأكد من الخروج؟';
     };
   }
@@ -715,27 +736,28 @@
   submitBtn.addEventListener('click', async () => {
     hideError();
     
-    // التحقق من حالة الإنترنت قبل البدء
+    // فحص مبدئي
     if (!navigator.onLine) {
-        showError('❌ لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.');
+        showError('❌ لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.', true);
         return;
     }
 
     const webhookUrl = webhookInput.value;
     if (!webhookUrl) {
-      showError('⚠️ الرجاء التأكد من رابط Webhook');
+      showError('⚠️ الرجاء التأكد من رابط Webhook', true);
       return;
     }
     if (!selectedFile) {
-      showError('⚠️ الرجاء اختيار ملف صوت أولاً');
+      showError('⚠️ الرجاء اختيار ملف صوت أولاً', true);
       return;
     }
 
-    // تفعيل الحماية والقفل
+    // تفعيل الحماية والمراقبة
     await requestWakeLock();
     enableExitProtection();
+    window.addEventListener('offline', handleOffline); // بدء مراقبة النت
+    window.addEventListener('online', handleOnline);   // بدء مراقبة العودة
     
-    // Switch to loading view
     showSection('loading');
     activateSteps();
 
@@ -755,7 +777,7 @@
         throw new Error(`خطأ من السيرفر (${response.status}): ${errText.slice(0, 200)}`);
       }
 
-      // Check content type
+      // معالجة الرد
       const contentType = response.headers.get('Content-Type') || '';
       let videoBlob;
 
@@ -770,7 +792,6 @@
           for (let i = 0; i < byteChars.length; i++) byteNums[i] = byteChars.charCodeAt(i);
           videoBlob = new Blob([byteNums], { type: 'video/mp4' });
         } else if (data.url || data.download_url) {
-           // Redirect handling...
            const link = document.createElement('a');
            link.href = data.url || data.download_url;
            link.download = 'output_video.mp4';
@@ -778,9 +799,11 @@
            downloadBtn.href = link.href;
            resultVideo.src  = link.href;
            
-           // Cleanup triggers
+           // Cleanup triggers (Important for redirect case)
            disableExitProtection();
            await releaseWakeLock();
+           window.removeEventListener('offline', handleOffline);
+           window.removeEventListener('online', handleOnline);
            
            showSection('result');
            return;
@@ -791,13 +814,11 @@
         videoBlob = await response.blob();
       }
 
-      // Mark all steps done
       document.querySelectorAll('.step').forEach(s => {
         s.classList.remove('active');
         s.classList.add('done');
       });
 
-      // Create object URL
       const videoUrl = URL.createObjectURL(videoBlob);
       resultVideo.src  = videoUrl;
       downloadBtn.href = videoUrl;
@@ -809,20 +830,20 @@
       clearStepTimers();
       showSection('upload');
       
-      // تخصيص رسالة الخطأ بناءً على حالة الإنترنت
       if (!navigator.onLine) {
-         showError('❌ انقطع الاتصال بالإنترنت أثناء المعالجة.');
-      } else if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-         showError('❌ حدث خطأ في الشبكة أو السيرفر لا يستجيب.');
+         showError('❌ فشلت العملية بسبب انقطاع الإنترنت.', true);
       } else {
-         showError('❌ ' + (err.message || 'حدث خطأ غير متوقع'));
+         showError('❌ ' + (err.message || 'حدث خطأ غير متوقع'), true);
       }
       console.error(err);
 
     } finally {
-      // هذا البلوك يضمن إزالة الحماية سواء نجحت العملية أو فشلت
+      // تنظيف كل شيء (حماية، قفل شاشة، مراقبة نت)
       disableExitProtection();
       await releaseWakeLock();
+      window.removeEventListener('offline', handleOffline); // إيقاف المراقبة
+      window.removeEventListener('online', handleOnline);   // إيقاف المراقبة
+      loadingSec.style.opacity = '1'; // ضمان عودة السطوع
     }
   });
 
