@@ -552,26 +552,35 @@
 
 <script>
   // ─── DOM refs ────────────────────────────────────────────────
-  const dropZone     = document.getElementById('drop-zone');
-  const fileInput    = document.getElementById('audio-file');
-  const fileInfo     = document.getElementById('file-info');
-  const fileNameTxt  = document.getElementById('file-name-text');
-  const fileSizeTxt  = document.getElementById('file-size-text');
-  const removeBtn    = document.getElementById('remove-btn');
-  const submitBtn    = document.getElementById('submit-btn');
-  const uploadSec    = document.getElementById('upload-section');
-  const loadingSec   = document.getElementById('loading-section');
-  const resultSec    = document.getElementById('result-section');
-  const errorBox     = document.getElementById('error-box');
-  const resultVideo  = document.getElementById('result-video');
-  const downloadBtn  = document.getElementById('download-btn');
-  const againBtn     = document.getElementById('again-btn');
-  const webhookInput = document.getElementById('webhook-url');
+  const dropZone       = document.getElementById('drop-zone');
+  const fileInput      = document.getElementById('audio-file');
+  const fileInfo       = document.getElementById('file-info');
+  const fileNameTxt    = document.getElementById('file-name-text');
+  const fileSizeTxt    = document.getElementById('file-size-text');
+  const removeBtn      = document.getElementById('remove-btn');
+  const submitBtn      = document.getElementById('submit-btn');
+  const uploadSec      = document.getElementById('upload-section');
+  const loadingSec     = document.getElementById('loading-section');
+  const resultSec      = document.getElementById('result-section');
+  const errorBox       = document.getElementById('error-box');
+  const resultVideo    = document.getElementById('result-video');
+  const downloadBtn    = document.getElementById('download-btn');
+  const againBtn       = document.getElementById('again-btn');
+  const webhookInput   = document.getElementById('webhook-url');
+
+  // ─── Wake Lock & Exit Protection Vars ────────────────────────
+  let wakeLock = null;
 
   // ─── Persist webhook URL ─────────────────────────────────────
   const STORAGE_KEY = 'n8n_webhook_url';
   const savedUrl = localStorage.getItem(STORAGE_KEY);
   if (savedUrl) webhookInput.value = savedUrl;
+  
+  // تحديث الرابط الجديد الذي وضعتيه في الكود السابق
+  if (!webhookInput.value) {
+      webhookInput.value = "https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4";
+  }
+
   webhookInput.addEventListener('change', () => {
     localStorage.setItem(STORAGE_KEY, webhookInput.value.trim());
   });
@@ -629,11 +638,10 @@
   }
 
   // ─── Steps animation ─────────────────────────────────────────
-  const STEP_DELAYS = [0, 4000, 9000, 16000]; // ms after submit
+  const STEP_DELAYS = [0, 5000, 15000, 30000]; // تم تعديل التوقيت ليصبح أكثر واقعية
   let stepTimers = [];
 
   function activateSteps() {
-    // mark step 1 active immediately
     STEP_DELAYS.forEach((delay, i) => {
       const t = setTimeout(() => {
         const all = document.querySelectorAll('.step');
@@ -666,27 +674,56 @@
     resultSec .style.display  = name === 'result'  ? '' : 'none';
   }
 
+  // ─── Wake Lock Logic ─────────────────────────────────────────
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('✅ Screen Wake Lock active');
+      }
+    } catch (err) {
+      console.warn('⚠️ Wake Lock Error:', err.message);
+    }
+  }
+
+  async function releaseWakeLock() {
+    if (wakeLock !== null) {
+      try {
+        await wakeLock.release();
+        wakeLock = null;
+        console.log('🔒 Screen Wake Lock released');
+      } catch (e) {}
+    }
+  }
+
+  // ─── Exit Protection (BeforeUnload) ──────────────────────────
+  function enableExitProtection() {
+    window.onbeforeunload = function (e) {
+      e = e || window.event;
+      // للمتصفحات القديمة
+      if (e) { e.returnValue = 'جاري المعالجة... هل أنت متأكد من الخروج؟'; }
+      // للمتصفحات الحديثة
+      return 'جاري المعالجة... هل أنت متأكد من الخروج؟';
+    };
+  }
+
+  function disableExitProtection() {
+    window.onbeforeunload = null;
+  }
+
   // ─── Submit ──────────────────────────────────────────────────
   submitBtn.addEventListener('click', async () => {
     hideError();
-    // 1. تعريف متغير للقفل
-let wakeLock = null;
+    
+    // التحقق من حالة الإنترنت قبل البدء
+    if (!navigator.onLine) {
+        showError('❌ لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.');
+        return;
+    }
 
-// 2. دالة طلب القفل
-async function requestWakeLock() {
-  try {
-    wakeLock = await navigator.wakeLock.request('screen');
-    console.log('Screen Wake Lock active');
-  } catch (err) {
-    console.error(`${err.name}, ${err.message}`);
-  }
-}
-
-// 3. استدعاء الدالة عند بدء التحميل
-await requestWakeLock();
-    const webhookUrl = "https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4";
+    const webhookUrl = webhookInput.value;
     if (!webhookUrl) {
-      showError('⚠️ الرجاء إدخال رابط Webhook الخاص بـ n8n أولاً');
+      showError('⚠️ الرجاء التأكد من رابط Webhook');
       return;
     }
     if (!selectedFile) {
@@ -694,11 +731,14 @@ await requestWakeLock();
       return;
     }
 
+    // تفعيل الحماية والقفل
+    await requestWakeLock();
+    enableExitProtection();
+    
     // Switch to loading view
     showSection('loading');
     activateSteps();
 
-    // Build FormData — field name must match what n8n Webhook expects
     const formData = new FormData();
     formData.append('audio_file', selectedFile, selectedFile.name);
 
@@ -706,7 +746,6 @@ await requestWakeLock();
       const response = await fetch(webhookUrl, {
         method: 'POST',
         body: formData,
-        // No Content-Type header — browser sets it with boundary automatically
       });
 
       clearStepTimers();
@@ -718,17 +757,12 @@ await requestWakeLock();
 
       // Check content type
       const contentType = response.headers.get('Content-Type') || '';
-
       let videoBlob;
 
       if (contentType.includes('video') || contentType.includes('octet-stream')) {
-        // Direct binary response
         videoBlob = await response.blob();
       } else if (contentType.includes('application/json')) {
-        // JSON response — might contain base64 video
         const data = await response.json();
-
-        // Try common keys
         const b64 = data.video_base64 || data.data || data.output_video;
         if (b64) {
           const byteChars = atob(b64);
@@ -736,20 +770,24 @@ await requestWakeLock();
           for (let i = 0; i < byteChars.length; i++) byteNums[i] = byteChars.charCodeAt(i);
           videoBlob = new Blob([byteNums], { type: 'video/mp4' });
         } else if (data.url || data.download_url) {
-          // Redirect URL
-          const link = document.createElement('a');
-          link.href     = data.url || data.download_url;
-          link.download = 'output_video.mp4';
-          link.target   = '_blank';
-          downloadBtn.href = link.href;
-          resultVideo.src  = link.href;
-          showSection('result');
-          return;
+           // Redirect handling...
+           const link = document.createElement('a');
+           link.href = data.url || data.download_url;
+           link.download = 'output_video.mp4';
+           link.target = '_blank';
+           downloadBtn.href = link.href;
+           resultVideo.src  = link.href;
+           
+           // Cleanup triggers
+           disableExitProtection();
+           await releaseWakeLock();
+           
+           showSection('result');
+           return;
         } else {
-          throw new Error('تعذر العثور على الفيديو في الرد. تأكد من إعداد Respond to Webhook بشكل صحيح.');
+          throw new Error('لم يتم العثور على فيديو في الرد.');
         }
       } else {
-        // Try as binary anyway
         videoBlob = await response.blob();
       }
 
@@ -763,8 +801,6 @@ await requestWakeLock();
       const videoUrl = URL.createObjectURL(videoBlob);
       resultVideo.src  = videoUrl;
       downloadBtn.href = videoUrl;
-
-      // Revoke old URLs on cleanup
       downloadBtn.onclick = null;
 
       showSection('result');
@@ -772,24 +808,29 @@ await requestWakeLock();
     } catch (err) {
       clearStepTimers();
       showSection('upload');
-      showError('❌ ' + (err.message || 'حدث خطأ غير متوقع'));
+      
+      // تخصيص رسالة الخطأ بناءً على حالة الإنترنت
+      if (!navigator.onLine) {
+         showError('❌ انقطع الاتصال بالإنترنت أثناء المعالجة.');
+      } else if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+         showError('❌ حدث خطأ في الشبكة أو السيرفر لا يستجيب.');
+      } else {
+         showError('❌ ' + (err.message || 'حدث خطأ غير متوقع'));
+      }
       console.error(err);
+
+    } finally {
+      // هذا البلوك يضمن إزالة الحماية سواء نجحت العملية أو فشلت
+      disableExitProtection();
+      await releaseWakeLock();
     }
-    if (wakeLock !== null) {
-  wakeLock.release()
-  .then(() => {
-    wakeLock = null;
-  });
-}
   });
 
   // ─── Again button ────────────────────────────────────────────
   againBtn.addEventListener('click', () => {
-    // Revoke previous video URL
     if (resultVideo.src) URL.revokeObjectURL(resultVideo.src);
     resultVideo.src  = '';
     downloadBtn.href = '#';
-
     clearFile();
     hideError();
     showSection('upload');
