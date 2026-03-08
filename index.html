@@ -190,39 +190,114 @@
     #loading-section { display: none; text-align: center; }
     #loading-section.show { display: block; }
     #loading-section.failed .loader-wrap,
+    #loading-section.failed .progress-bar-wrap,
     #loading-section.failed .progress-steps { opacity: 0.1; filter: grayscale(100%); pointer-events: none; }
 
-    .loader-wrap { position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem; transition: all 0.3s; }
+    .loader-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 1rem; transition: all 0.3s; }
     .loader-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; animation: spin 1.2s linear infinite; }
     .loader-ring:nth-child(1) { border-top-color: var(--accent); animation-duration: 1.2s; }
     .loader-ring:nth-child(2) { border-right-color: var(--accent2); inset: 8px; animation-duration: 1.8s; animation-direction: reverse; }
     .loader-ring:nth-child(3) { border-bottom-color: var(--success); inset: 16px; animation-duration: 2.4s; }
-    .loader-core { position: absolute; inset: 28px; background: radial-gradient(circle, rgba(0,229,255,.2), transparent); border-radius: 50%; animation: breathe 2s ease-in-out infinite; }
+    .loader-core { position: absolute; inset: 24px; background: radial-gradient(circle, rgba(0,229,255,.2), transparent); border-radius: 50%; animation: breathe 2s ease-in-out infinite; }
 
-    /* ─── Poll Counter ───────────────────────────────────────── */
-    .poll-counter {
-      display: inline-block;
-      margin-top: .5rem;
-      font-family: 'Space Mono', monospace;
-      font-size: .72rem;
-      color: var(--muted);
-      background: rgba(255,255,255,.04);
+    .loading-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .3rem; }
+    .loading-sub { color: var(--muted); font-size: .82rem; }
+
+    /* ─── Progress Bar (مبنية على الوقت الحقيقي) ────────────── */
+    .progress-bar-wrap {
+      margin: 1.1rem 0 .4rem;
+      background: rgba(255,255,255,.05);
       border: 1px solid var(--border);
       border-radius: 999px;
-      padding: .25rem .8rem;
-      letter-spacing: .05em;
+      height: 6px;
+      overflow: hidden;
     }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1.2s ease;
+      box-shadow: 0 0 8px rgba(0,229,255,.5);
+    }
+    /* الـ shimmer يعطي إحساس الحركة حتى لو الـ fill ثابت */
+    .progress-bar-fill::after {
+      content: '';
+      display: block;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      animation: shimmer 1.8s infinite;
+    }
+    @keyframes shimmer { 0%{transform:translateX(-150%)} 100%{transform:translateX(350%)} }
 
-    .loading-title { font-size: 1.1rem; font-weight: 600; margin-bottom: .5rem; }
-    .loading-sub { color: var(--muted); font-size: .85rem; }
+    /* ─── Timer Row ──────────────────────────────────────────── */
+    .timer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    .timer-row .elapsed { color: var(--accent); }
 
-    .progress-steps { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .6rem; text-align: right; }
-    .step { display: flex; align-items: center; gap: .75rem; padding: .6rem .9rem; border-radius: 8px; background: rgba(255,255,255,.02); border: 1px solid transparent; font-size: .82rem; color: var(--muted); transition: all .4s; }
+    /* ─── Steps ──────────────────────────────────────────────── */
+    .progress-steps { display: flex; flex-direction: column; gap: .45rem; text-align: right; }
+    .step {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: .55rem .9rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid transparent;
+      font-size: .8rem;
+      color: var(--muted);
+      transition: all .5s;
+    }
+    .step .step-left { display: flex; align-items: center; gap: .65rem; }
     .step.active { color: var(--text); border-color: var(--accent); background: rgba(0,229,255,.05); }
-    .step.done { color: var(--success); border-color: rgba(0,200,150,.3); background: rgba(0,200,150,.05); }
+    .step.done   { color: var(--success); border-color: rgba(0,200,150,.3); background: rgba(0,200,150,.05); }
     .step .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background .4s; }
     .step.active .step-dot { background: var(--accent); animation: pulse 1s infinite; }
     .step.done .step-dot { background: var(--success); }
+    /* وقت تقديري صغير على اليسار */
+    .step .step-eta {
+      font-family: 'Space Mono', monospace;
+      font-size: .65rem;
+      color: var(--muted);
+      white-space: nowrap;
+      opacity: 0.6;
+    }
+    .step.active .step-eta { color: var(--accent); opacity: 1; }
+    .step.done   .step-eta { color: var(--success); opacity: .8; }
+
+    /* ─── Tips Section ───────────────────────────────────────── */
+    .tips-box {
+      margin-top: 1.1rem;
+      padding: .8rem 1rem;
+      border-radius: 10px;
+      background: rgba(123,97,255,.06);
+      border: 1px solid rgba(123,97,255,.2);
+      text-align: right;
+    }
+    .tips-box .tip-label {
+      font-size: .68rem;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent2);
+      letter-spacing: .06em;
+      margin-bottom: .45rem;
+    }
+    .tips-box .tip-text {
+      font-size: .8rem;
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 2.5rem;
+      transition: opacity .4s;
+    }
 
     /* ─── Result ─────────────────────────────────────────────── */
     #result-section { display: none; }
@@ -326,16 +401,43 @@
       <div class="loader-core"></div>
     </div>
     <div class="loading-title">جاري المعالجة…</div>
-    <div class="loading-sub">لا تغلق هذه الصفحة</div>
+    <div class="loading-sub">لا تُغلق هذه الصفحة أو تُغيّر التبويب</div>
 
-    <!-- عداد الـ polling — جديد -->
-    <div class="poll-counter" id="poll-counter">⏳ في انتظار بدء المعالجة</div>
+    <!-- شريط التقدم الحقيقي -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
 
-    <div class="progress-steps" id="steps-container">
-      <div class="step active" id="step-1"><div class="step-dot"></div> رفع ملف الصوت</div>
-      <div class="step"        id="step-2"><div class="step-dot"></div> تنزيل الفيديو</div>
-      <div class="step"        id="step-3"><div class="step-dot"></div> دمج الصوت والفيديو</div>
-      <div class="step"        id="step-4"><div class="step-dot"></div> تجهيز الملف النهائي</div>
+    <!-- صف الوقت: منقضٍ + تقدير -->
+    <div class="timer-row">
+      <span class="elapsed" id="elapsed-display">00:00</span>
+      <span id="eta-display">الوقت المتوقع: ~2 دقيقة</span>
+    </div>
+
+    <!-- الخطوات — كل خطوة بها وقتها التقديري -->
+    <div class="progress-steps">
+      <div class="step active" id="step-1">
+        <div class="step-left"><div class="step-dot"></div> رفع ملف الصوت</div>
+        <span class="step-eta">~5ث</span>
+      </div>
+      <div class="step" id="step-2">
+        <div class="step-left"><div class="step-dot"></div> تنزيل الفيديو من Drive</div>
+        <span class="step-eta">~15ث</span>
+      </div>
+      <div class="step" id="step-3">
+        <div class="step-left"><div class="step-dot"></div> دمج الصوت والفيديو</div>
+        <span class="step-eta">~60ث</span>
+      </div>
+      <div class="step" id="step-4">
+        <div class="step-left"><div class="step-dot"></div> تجهيز الملف النهائي</div>
+        <span class="step-eta">~20ث</span>
+      </div>
+    </div>
+
+    <!-- صندوق التعليمات المتدورة -->
+    <div class="tips-box">
+      <div class="tip-label">💡 تعليمات</div>
+      <div class="tip-text" id="tip-text">يعمل الخادم الآن على معالجة ملفك — هذا قد يستغرق بضع دقائق حسب طول الصوت.</div>
     </div>
   </div>
 
@@ -383,18 +485,95 @@
   const downloadBtn   = document.getElementById('download-btn');
   const againBtn      = document.getElementById('again-btn');
   const webhookInput  = document.getElementById('webhook-url');
-  const pollCounter   = document.getElementById('poll-counter');
+  const progressFill  = document.getElementById('progress-fill');
+  const elapsedDisp   = document.getElementById('elapsed-display');
+  const etaDisp       = document.getElementById('eta-display');
+  const tipText       = document.getElementById('tip-text');
 
   // ─── State ──────────────────────────────────────────────────
-  let selectedFile     = null;
-  let pollingInterval  = null;    // ← الجديد: مرجع الـ interval
-  let wakeLock         = null;
+  let selectedFile    = null;
+  let pollingInterval = null;
+  let elapsedInterval = null;   // ← عداد الثواني المستقل
+  let wakeLock        = null;
+  let startTime       = 0;      // وقت بدء الـ polling
 
   // ─── Config ─────────────────────────────────────────────────
-  const SUBMIT_WEBHOOK = 'https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4';
-  const POLL_INTERVAL_MS  = 5000;    // فحص كل 5 ثوانٍ
-  const POLL_TIMEOUT_MS   = 12 * 60 * 1000;  // حد أقصى 12 دقيقة
-  const UPLOAD_TIMEOUT_MS = 90 * 1000;        // 90 ثانية للرفع
+  const SUBMIT_WEBHOOK    = 'https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4';
+  const POLL_INTERVAL_MS  = 5000;
+  const POLL_TIMEOUT_MS   = 12 * 60 * 1000;
+  const UPLOAD_TIMEOUT_MS = 90 * 1000;
+  const EST_TOTAL_SEC     = 120;  // تقدير مدة المعالجة بالثواني (للـ progress bar)
+
+  // ─── Tips: تعليمات تتبدل تلقائياً كل 12 ثانية ───────────────
+  const TIPS = [
+    'يعمل الخادم الآن على معالجة ملفك — هذا قد يستغرق بضع دقائق حسب طول الصوت.',
+    '⚠️ لا تُغلق هذه النافذة أو التبويب — المعالجة تعمل في الخلفية وستكتمل تلقائياً.',
+    '📱 إذا كنت على هاتف، أبقِ الشاشة مضاءة لتجنب انقطاع الاتصال.',
+    '⏳ الوقت المتوقع للمعالجة: دقيقة إلى دقيقتين حسب حجم ملف الصوت.',
+    '🔄 الصفحة تفحص الخادم كل 5 ثوانٍ تلقائياً — ستنتقل للنتيجة فور الانتهاء.',
+    '✅ بعد اكتمال المعالجة ستظهر لك شاشة المعاينة والتنزيل مباشرةً.',
+  ];
+  let tipIndex = 0, tipTimer = null;
+
+  function startTips() {
+    tipIndex = 0;
+    tipText.textContent = TIPS[0];
+    tipTimer = setInterval(() => {
+      tipText.style.opacity = '0';
+      setTimeout(() => {
+        tipIndex = (tipIndex + 1) % TIPS.length;
+        tipText.textContent = TIPS[tipIndex];
+        tipText.style.opacity = '1';
+      }, 400);
+    }, 12000);
+  }
+  function stopTips() {
+    if (tipTimer) { clearInterval(tipTimer); tipTimer = null; }
+  }
+
+  // ─── Elapsed timer (يعمل كل ثانية مستقلاً عن الـ polling) ───
+  function startElapsedTimer() {
+    elapsedInterval = setInterval(() => {
+      const sec = Math.floor((Date.now() - startTime) / 1000);
+      const m = Math.floor(sec / 60).toString().padStart(2,'0');
+      const s = (sec % 60).toString().padStart(2,'0');
+      elapsedDisp.textContent = `${m}:${s}`;
+      // شريط التقدم يتحرك حتى 90% بناءً على الوقت الحقيقي
+      const pct = Math.min((sec / EST_TOTAL_SEC) * 90, 90);
+      progressFill.style.width = pct + '%';
+      // تحديث الـ eta
+      const remaining = Math.max(EST_TOTAL_SEC - sec, 0);
+      etaDisp.textContent = remaining > 0
+        ? `متبقي تقريباً: ~${remaining}ث`
+        : 'يُكمل المعالجة…';
+    }, 1000);
+  }
+  function stopElapsedTimer() {
+    if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
+  }
+
+  // ─── Steps: مبنية على elapsed_seconds الحقيقي من الخادم ──────
+  // الخريطة: متى تتحوّل كل خطوة للـ active (بالثواني)
+  //   step-2 → بمجرد استلام job_id (الرفع انتهى)
+  //   step-3 → بعد 18ث (تنزيل الفيديو من Drive يأخذ ~15-20ث)
+  //   step-4 → بعد 70ث (FFmpeg يأخذ الوقت الأطول)
+  const STEP_THRESHOLDS = { 2: 3, 3: 18, 4: 70 };
+
+  function updateStepsFromElapsed(elapsedSec) {
+    // نحدد أي خطوة يجب أن تكون active الآن
+    let currentStep = 2; // بعد الرفع، نبدأ من 2
+    if (elapsedSec >= STEP_THRESHOLDS[4]) currentStep = 4;
+    else if (elapsedSec >= STEP_THRESHOLDS[3]) currentStep = 3;
+    else if (elapsedSec >= STEP_THRESHOLDS[2]) currentStep = 2;
+
+    for (let i = 1; i <= 4; i++) {
+      const s = document.getElementById(`step-${i}`);
+      if (!s || s.classList.contains('done')) continue; // لا تتراجع عن done
+      s.classList.remove('active', 'done');
+      if (i < currentStep) s.classList.add('done');
+      else if (i === currentStep) s.classList.add('active');
+    }
+  }
 
   // ─── Persist webhook URL ─────────────────────────────────────
   const STORAGE_KEY = 'n8n_webhook_url';
@@ -473,55 +652,18 @@
     loadingSec.classList.remove('failed');
   }
 
-  // ─── Steps helpers ───────────────────────────────────────────
-  function setStepActive(n) {
-    for (let i = 1; i <= 4; i++) {
-      const s = document.getElementById(`step-${i}`);
-      if (!s) continue;
-      if      (i < n)  { s.classList.remove('active'); s.classList.add('done'); }
-      else if (i === n){ s.classList.add('active');    s.classList.remove('done'); }
-      else             { s.classList.remove('active',  'done'); }
-    }
-  }
-
+  // ─── Step done helpers ───────────────────────────────────────
   function setStepDone(n) {
     const s = document.getElementById(`step-${n}`);
     if (s) { s.classList.remove('active'); s.classList.add('done'); }
   }
-
-  function setAllStepsDone() {
-    for (let i = 1; i <= 4; i++) setStepDone(i);
-  }
-
-  // ─── Timing-based step animation (visual only, steps 2-4) ────
-  let stepTimers = [];
-
-  function startStepAnimation() {
-    // Step 1 is already active; animate 2, 3, 4 by elapsed time
-    const delays = [6000, 22000, 55000];
-    delays.forEach((delay, i) => {
-      const stepNum = i + 2;
-      const t = setTimeout(() => {
-        // لا تبدّل إذا كانت الخطوة مكتملة فعلاً
-        const s = document.getElementById(`step-${stepNum}`);
-        if (s && !s.classList.contains('done')) setStepActive(stepNum);
-      }, delay);
-      stepTimers.push(t);
-    });
-  }
-
-  function clearStepTimers() {
-    stepTimers.forEach(clearTimeout);
-    stepTimers = [];
-  }
-
-  // ─── Poll counter display ────────────────────────────────────
-  function updatePollCounter(attemptNum, elapsedMs) {
-    const elapsedSec  = Math.round(elapsedMs / 1000);
-    const mins = Math.floor(elapsedSec / 60);
-    const secs = elapsedSec % 60;
-    const timeStr = mins > 0 ? `${mins}د ${secs}ث` : `${secs}ث`;
-    pollCounter.textContent = `🔄 فحص #${attemptNum} · منذ ${timeStr}`;
+  function setAllStepsDone() { for (let i = 1; i <= 4; i++) setStepDone(i); }
+  function resetSteps() {
+    for (let i = 1; i <= 4; i++) {
+      const s = document.getElementById(`step-${i}`);
+      if (s) s.classList.remove('active','done');
+    }
+    document.getElementById('step-1').classList.add('active');
   }
 
   // ─── Section visibility ──────────────────────────────────────
@@ -543,11 +685,12 @@
   function enableExitProtection()  { window.onbeforeunload = () => 'جاري المعالجة... هل أنت متأكد؟'; }
   function disableExitProtection() { window.onbeforeunload = null; }
 
-  // ─── Cleanup (always call at end) ────────────────────────────
+  // ─── Cleanup ─────────────────────────────────────────────────
   function cleanup() {
     disableExitProtection();
     releaseWakeLock();
-    clearStepTimers();
+    stopElapsedTimer();
+    stopTips();
     if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
     window.removeEventListener('offline', handleOffline);
   }
@@ -586,8 +729,11 @@
     window.addEventListener('offline', handleOffline);
 
     showSection('loading');
-    setStepActive(1);
-    pollCounter.textContent = '⬆️ جاري رفع الملف…';
+    resetSteps();
+    progressFill.style.width = '0%';
+    elapsedDisp.textContent = '00:00';
+    etaDisp.textContent = 'الوقت المتوقع: ~2 دقيقة';
+    startTips();
 
     // ── المرحلة 1: رفع الملف والحصول على job_id ─────────────────
     let jobId;
@@ -612,7 +758,9 @@
 
       console.log(`✅ Job submitted: ${jobId}`);
       setStepDone(1);
-      startStepAnimation(); // تبدأ الخطوات 2-4 بالتحريك التلقائي
+      // ← نبدأ العداد الحقيقي بعد استلام job_id
+      startTime = Date.now();
+      startElapsedTimer();
 
     } catch (err) {
       cleanup();
@@ -626,17 +774,18 @@
     }
 
     // ── المرحلة 2: Polling حتى اكتمال المعالجة ──────────────────
-    const pollUrl   = getPollUrl();
-    const startTime = Date.now();
-    let   attempts  = 0;
+    const pollUrl = getPollUrl();
+    let attempts  = 0;
 
     console.log(`🔄 Starting polling: ${pollUrl}?job_id=${jobId}`);
-    pollCounter.textContent = `🔄 بدأ الفحص التلقائي…`;
 
     pollingInterval = setInterval(async () => {
       const elapsed = Date.now() - startTime;
+      const elapsedSec = Math.floor(elapsed / 1000);
       attempts++;
-      updatePollCounter(attempts, elapsed);
+
+      // تحديث الخطوات بناءً على الوقت الحقيقي المنقضي
+      updateStepsFromElapsed(elapsedSec);
 
       // Timeout guard
       if (elapsed > POLL_TIMEOUT_MS) {
@@ -650,34 +799,36 @@
         const response = await fetchWithTimeout(
           `${pollUrl}?job_id=${encodeURIComponent(jobId)}`,
           { method: 'GET' },
-          30000 // 30 ثانية timeout لكل poll
+          30000
         );
 
         const contentType = response.headers.get('Content-Type') || '';
 
-        // ✅ حالة النجاح: استلمنا الفيديو مباشرة
+        // ✅ استلمنا الفيديو
         if (contentType.includes('video') || contentType.includes('octet-stream')) {
           clearInterval(pollingInterval);
           pollingInterval = null;
-          pollCounter.textContent = '✅ اكتمل التحميل!';
 
           const videoBlob = await response.blob();
           const videoUrl  = URL.createObjectURL(videoBlob);
 
+          // إكمال الـ progress bar لـ 100%
+          progressFill.style.transition = 'width .6s ease';
+          progressFill.style.width = '100%';
           setAllStepsDone();
+
           resultVideo.src  = videoUrl;
           downloadBtn.href = videoUrl;
-          downloadBtn.onclick = null;
 
           cleanup();
-          showSection('result');
+          setTimeout(() => showSection('result'), 500);
           return;
         }
 
-        // 🔍 حالة JSON: اقرأ الحالة
+        // 🔍 JSON status
         if (response.ok) {
           const data = await response.json().catch(() => ({}));
-          console.log(`Poll #${attempts}: status = ${data.status}`);
+          console.log(`Poll #${attempts}: status=${data.status} elapsed=${elapsedSec}s`);
 
           if (data.status === 'error') {
             clearInterval(pollingInterval);
@@ -685,13 +836,11 @@
             cleanup();
             showFatalError('❌ فشلت المعالجة على الخادم: ' + (data.message || 'خطأ غير معروف'));
             showSection('upload');
-            return;
           }
-          // status = 'processing' | 'not_found' → نكمل الانتظار
+          // processing | not_found → نكمل
         }
 
       } catch (err) {
-        // أخطاء الشبكة المؤقتة لا تُوقف الـ polling — نعيد المحاولة
         if (err.name !== 'AbortError') {
           console.warn(`Poll #${attempts} error (retrying):`, err.message);
         }
@@ -709,14 +858,11 @@
     clearFile();
     hideError();
     cleanup();
+    resetSteps();
+    progressFill.style.width = '0%';
+    elapsedDisp.textContent  = '00:00';
+    etaDisp.textContent      = 'الوقت المتوقع: ~2 دقيقة';
     showSection('upload');
-    // إعادة تهيئة الخطوات
-    for (let i = 1; i <= 4; i++) {
-      const s = document.getElementById(`step-${i}`);
-      if (s) { s.classList.remove('active', 'done'); }
-    }
-    document.getElementById('step-1').classList.add('active');
-    pollCounter.textContent = '⏳ في انتظار بدء المعالجة';
   });
 
   // ─── Init ────────────────────────────────────────────────────
