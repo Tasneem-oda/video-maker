@@ -667,10 +667,11 @@
   }
 
   // ─── Section visibility ──────────────────────────────────────
+  // ⚠️ لا تستخدم '' لأنها تُعيد لـ CSS الذي يقول display:none
   function showSection(name) {
-    uploadSec .style.display = name === 'upload'  ? '' : 'none';
-    loadingSec.style.display = name === 'loading' ? '' : 'none';
-    resultSec .style.display = name === 'result'  ? '' : 'none';
+    uploadSec .style.display = name === 'upload'  ? 'block' : 'none';
+    loadingSec.style.display = name === 'loading' ? 'block' : 'none';
+    resultSec .style.display = name === 'result'  ? 'block' : 'none';
   }
 
   // ─── Wake Lock ───────────────────────────────────────────────
@@ -802,17 +803,40 @@
           30000
         );
 
+        if (!response.ok) {
+          console.warn(`Poll #${attempts}: HTTP ${response.status} — retrying`);
+          return; // لا توقف الـ polling، حاول مرة أخرى
+        }
+
+        // ── قراءة الجسم مرة واحدة كـ ArrayBuffer ──────────────────
+        // هذا يتجنب مشكلة قراءة stream مرتين
+        const buffer = await response.arrayBuffer();
+        const bytes  = new Uint8Array(buffer);
+
+        // ── كشف نوع الملف من الـ magic bytes ──────────────────────
+        // MP4 يبدأ بـ [??][??][??][??] 66 74 79 70  (....ftyp)
+        // الـ offset 4 يحتوي على "ftyp" = 0x66 0x74 0x79 0x70
+        const isMp4 = bytes.length > 8
+          && bytes[4] === 0x66  // f
+          && bytes[5] === 0x74  // t
+          && bytes[6] === 0x79  // y
+          && bytes[7] === 0x70; // p
+
         const contentType = response.headers.get('Content-Type') || '';
+        const isVideo = contentType.includes('video')
+                     || contentType.includes('octet-stream')
+                     || isMp4; // ← الكشف بالـ magic bytes كـ fallback
+
+        console.log(`Poll #${attempts}: CT="${contentType}" isMp4=${isMp4} size=${bytes.length}`);
 
         // ✅ استلمنا الفيديو
-        if (contentType.includes('video') || contentType.includes('octet-stream')) {
+        if (isVideo && bytes.length > 1000) {
           clearInterval(pollingInterval);
           pollingInterval = null;
 
-          const videoBlob = await response.blob();
+          const videoBlob = new Blob([buffer], { type: 'video/mp4' });
           const videoUrl  = URL.createObjectURL(videoBlob);
 
-          // إكمال الـ progress bar لـ 100%
           progressFill.style.transition = 'width .6s ease';
           progressFill.style.width = '100%';
           setAllStepsDone();
@@ -825,9 +849,10 @@
           return;
         }
 
-        // 🔍 JSON status
-        if (response.ok) {
-          const data = await response.json().catch(() => ({}));
+        // 🔍 ليس فيديو → حاول JSON status
+        try {
+          const text = new TextDecoder().decode(buffer);
+          const data = JSON.parse(text);
           console.log(`Poll #${attempts}: status=${data.status} elapsed=${elapsedSec}s`);
 
           if (data.status === 'error') {
@@ -838,6 +863,9 @@
             showSection('upload');
           }
           // processing | not_found → نكمل
+        } catch {
+          // لا JSON ولا فيديو — ربما استجابة فارغة، نعيد المحاولة
+          console.warn(`Poll #${attempts}: unrecognized response, retrying...`);
         }
 
       } catch (err) {
