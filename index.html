@@ -737,8 +737,6 @@
     startTips();
 
     // ── المرحلة 1: رفع الملف ─────────────────────────────────────
-    // يعمل مع workflow القديم (يُعيد فيديو مباشرة)
-    // ويعمل مع workflow الجديد (يُعيد job_id للـ polling)
     let jobId = null;
     try {
       const formData = new FormData();
@@ -749,64 +747,90 @@
         body: formData
       }, UPLOAD_TIMEOUT_MS);
 
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        throw new Error(`فشل الرفع (${response.status}): ${errText.slice(0, 120)}`);
-      }
-
-      // ── قراءة الاستجابة كـ ArrayBuffer وكشف نوعها ───────────
+      // ── قراءة الاستجابة كـ ArrayBuffer دائماً ────────────────
       const buffer      = await response.arrayBuffer();
       const bytes       = new Uint8Array(buffer);
       const contentType = response.headers.get('Content-Type') || '';
+      const statusCode  = response.status;
 
-      // كشف MP4 بالـ magic bytes (offset 4 = "ftyp")
+      // تحويل لنص للـ debug ولكشف HTML errors
+      const rawText = new TextDecoder().decode(buffer.slice(0, 300));
+      console.log(`Submit response: status=${statusCode} CT="${contentType}" size=${bytes.length}`);
+      console.log(`Submit body preview: ${rawText}`);
+
+      // ── كشف HTTP errors أولاً ────────────────────────────────
+      // HuggingFace proxy يُعيد 502/503/504 مع صفحة HTML عند timeout
+      if (!response.ok) {
+        if (statusCode === 504 || statusCode === 502 || statusCode === 503) {
+          throw new Error(
+            `الخادم استغرق وقتاً طويلاً جداً (${statusCode}). ` +
+            `تأكد من تفعيل workflow_submit.json الجديد الذي يرد فوراً بـ job_id ` +
+            `بدلاً من الانتظار حتى نهاية المعالجة.`
+          );
+        }
+        throw new Error(`فشل الرفع (${statusCode}): ${rawText.slice(0, 150)}`);
+      }
+
+      // ── كشف MP4 بالـ magic bytes (offset 4 = "ftyp") ─────────
       const isMp4 = bytes.length > 8
         && bytes[4] === 0x66 && bytes[5] === 0x74
         && bytes[6] === 0x79 && bytes[7] === 0x70;
 
-      console.log(`Submit response: CT="${contentType}" isMp4=${isMp4} size=${bytes.length}`);
-
-      // ── CASE A: الـ workflow القديم أعاد الفيديو مباشرةً ───────
-      if (isMp4 || contentType.includes('video') || contentType.includes('octet-stream')) {
-        console.log('⚡ Old workflow detected — video returned directly, skipping polling');
-
+      // ── CASE A: الفيديو جاء مباشرةً (workflow قديم) ──────────
+      if (isMp4 || contentType.includes('video')) {
+        console.log('⚡ Direct video response — displaying result');
         const videoBlob = new Blob([buffer], { type: 'video/mp4' });
         const videoUrl  = URL.createObjectURL(videoBlob);
-
         progressFill.style.transition = 'width .6s ease';
         progressFill.style.width = '100%';
         setAllStepsDone();
-
         resultVideo.src  = videoUrl;
         downloadBtn.href = videoUrl;
-
         cleanup();
         setTimeout(() => showSection('result'), 400);
-        return; // ← انتهى، لا نحتاج polling
+        return;
       }
 
-      // ── CASE B: الـ workflow الجديد أعاد job_id (JSON) ─────────
-      try {
-        const text = new TextDecoder().decode(buffer);
-        const data = JSON.parse(text);
-        jobId = data.job_id;
-      } catch {
-        throw new Error('استجابة الخادم غير مفهومة — تأكد من تفعيل الـ workflow الجديد.');
+      // ── CASE B: JSON → job_id (workflow جديد) ────────────────
+      if (contentType.includes('json') || rawText.trim().startsWith('{')) {
+        try {
+          const data = JSON.parse(new TextDecoder().decode(buffer));
+          jobId = data.job_id;
+        } catch {
+          throw new Error(`الخادم أعاد JSON غير صالح: ${rawText.slice(0, 120)}`);
+        }
+        if (!jobId) {
+          throw new Error(
+            `الخادم أعاد JSON بدون job_id. ` +
+            `محتوى الرد: ${rawText.slice(0, 150)}`
+          );
+        }
+        console.log(`✅ Polling mode — job_id: ${jobId}`);
+        setStepDone(1);
+        startTime = Date.now();
+        startElapsedTimer();
+
+      } else {
+        // ── CASE C: استجابة مجهولة — اعرض المحتوى الفعلي ───────
+        const isHtml = rawText.includes('<html') || rawText.includes('<!DOCTYPE');
+        if (isHtml) {
+          throw new Error(
+            `الخادم أعاد صفحة HTML (على الأرجح 504 Timeout من HuggingFace). ` +
+            `الحل: فعّل workflow_submit.json الجديد كي يرد فوراً بـ job_id.`
+          );
+        }
+        throw new Error(
+          `استجابة غير متوقعة (${statusCode}, ${contentType || 'no-CT'}): ` +
+          `${rawText.slice(0, 120)}`
+        );
       }
-
-      if (!jobId) throw new Error('لم يتم استلام job_id — تأكد من تفعيل workflow_submit.json الجديد.');
-
-      console.log(`✅ Job submitted (polling mode): ${jobId}`);
-      setStepDone(1);
-      startTime = Date.now();
-      startElapsedTimer();
 
     } catch (err) {
       cleanup();
       if (err.name === 'AbortError') {
-        showFatalError('❌ انتهت مهلة رفع الملف (90 ثانية). يرجى المحاولة مرة أخرى.');
+        showFatalError('❌ انتهت مهلة الرفع — الملف كبير جداً أو الاتصال بطيء. حاول مرة أخرى.');
       } else {
-        showFatalError('❌ ' + (err.message || 'فشل رفع الملف لسبب غير متوقع'));
+        showFatalError('❌ ' + (err.message || 'خطأ غير متوقع'));
       }
       showSection('upload');
       return;
