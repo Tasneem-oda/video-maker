@@ -22,7 +22,6 @@
       --glow:       0 0 40px rgba(0,229,255,.15);
     }
 
-    /* ─── Reset ─────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
@@ -33,7 +32,6 @@
       overflow-x: hidden;
     }
 
-    /* ─── Animated Background ───────────────────────────────── */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -43,7 +41,6 @@
       pointer-events: none;
     }
 
-    /* ─── Grid Lines ────────────────────────────────────────── */
     .grid-bg {
       position: fixed; inset: 0;
       background-image:
@@ -53,7 +50,6 @@
       pointer-events: none;
     }
 
-    /* ─── Layout ─────────────────────────────────────────────── */
     .page {
       position: relative;
       min-height: 100vh;
@@ -65,7 +61,6 @@
       gap: 2rem;
     }
 
-    /* ─── Header ─────────────────────────────────────────────── */
     .header { text-align: center; }
     .header .badge {
       display: inline-flex;
@@ -96,7 +91,6 @@
     }
     .header p { margin-top: .75rem; color: var(--muted); font-size: .95rem; font-weight: 300; }
 
-    /* ─── Card ───────────────────────────────────────────────── */
     .card {
       width: 100%;
       max-width: 520px;
@@ -108,7 +102,6 @@
       transition: box-shadow .3s;
     }
 
-    /* ─── Drop Zone ──────────────────────────────────────────── */
     .drop-zone {
       border: 2px dashed var(--border);
       border-radius: 12px;
@@ -131,7 +124,6 @@
     .drop-zone .label { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: .4rem; }
     .drop-zone .sublabel { font-size: .8rem; color: var(--muted); }
 
-    /* ─── File Info ──────────────────────────────────────────── */
     .file-info {
       display: none;
       align-items: center;
@@ -149,7 +141,23 @@
     .file-info .remove-btn { margin-right: auto; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: .25rem; transition: color .2s; flex-shrink: 0; }
     .file-info .remove-btn:hover { color: var(--danger); }
 
-    /* ─── Submit Button ──────────────────────────────────────── */
+    /* ─── [جديد] تحذير حجم الملف ─────────────────────────── */
+    .size-warning {
+      display: none;
+      align-items: center;
+      gap: .6rem;
+      margin-top: .6rem;
+      padding: .6rem .9rem;
+      background: rgba(255,193,7,.07);
+      border: 1px solid rgba(255,193,7,.3);
+      border-radius: 8px;
+      font-size: .78rem;
+      color: #ffc107;
+      line-height: 1.45;
+    }
+    .size-warning.show { display: flex; }
+    .size-warning .sw-icon { font-size: 1rem; flex-shrink: 0; }
+
     .submit-btn {
       margin-top: 1.5rem;
       width: 100%;
@@ -171,7 +179,6 @@
     .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,.3); }
     .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    /* ─── Webhook Config ─────────────────────────────────────── */
     .config-row {
       display: none;
       align-items: center;
@@ -186,7 +193,50 @@
     .config-row input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: .8rem; font-family: 'Space Mono', monospace; min-width: 0; }
     .config-row input::placeholder { color: var(--muted); }
 
-    /* ─── Loading State ──────────────────────────────────────── */
+    /* ─── [جديد] مرحلة الضغط ──────────────────────────────── */
+    #compress-section { display: none; text-align: center; }
+    #compress-section.show { display: block; }
+
+    .compress-icon { font-size: 2.5rem; margin-bottom: .8rem; animation: breathe 1.5s ease-in-out infinite; display: block; }
+    .compress-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .3rem; }
+    .compress-sub   { color: var(--muted); font-size: .82rem; margin-bottom: 1.1rem; }
+
+    .compress-bar-wrap {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: .5rem;
+    }
+    .compress-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffc107, #ff9800);
+      transition: width .8s ease;
+    }
+    .compress-bar-fill::after {
+      content: '';
+      display: block; width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      animation: shimmer 1.8s infinite;
+    }
+    .compress-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: .72rem;
+      color: #ffc107;
+      text-align: center;
+    }
+    .compress-sizes {
+      display: flex;
+      justify-content: space-between;
+      font-size: .72rem;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      margin-top: .4rem;
+    }
+
     #loading-section { display: none; text-align: center; }
     #loading-section.show { display: block; }
     #loading-section.failed .loader-wrap,
@@ -203,7 +253,6 @@
     .loading-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .3rem; }
     .loading-sub { color: var(--muted); font-size: .82rem; }
 
-    /* ─── Progress Bar (مبنية على الوقت الحقيقي) ────────────── */
     .progress-bar-wrap {
       margin: 1.1rem 0 .4rem;
       background: rgba(255,255,255,.05);
@@ -220,7 +269,6 @@
       transition: width 1.2s ease;
       box-shadow: 0 0 8px rgba(0,229,255,.5);
     }
-    /* الـ shimmer يعطي إحساس الحركة حتى لو الـ fill ثابت */
     .progress-bar-fill::after {
       content: '';
       display: block;
@@ -231,7 +279,6 @@
     }
     @keyframes shimmer { 0%{transform:translateX(-150%)} 100%{transform:translateX(350%)} }
 
-    /* ─── Timer Row ──────────────────────────────────────────── */
     .timer-row {
       display: flex;
       justify-content: space-between;
@@ -243,7 +290,6 @@
     }
     .timer-row .elapsed { color: var(--accent); }
 
-    /* ─── Steps ──────────────────────────────────────────────── */
     .progress-steps { display: flex; flex-direction: column; gap: .45rem; text-align: right; }
     .step {
       display: flex;
@@ -264,7 +310,6 @@
     .step .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background .4s; }
     .step.active .step-dot { background: var(--accent); animation: pulse 1s infinite; }
     .step.done .step-dot { background: var(--success); }
-    /* وقت تقديري صغير على اليسار */
     .step .step-eta {
       font-family: 'Space Mono', monospace;
       font-size: .65rem;
@@ -275,7 +320,6 @@
     .step.active .step-eta { color: var(--accent); opacity: 1; }
     .step.done   .step-eta { color: var(--success); opacity: .8; }
 
-    /* ─── Tips Section ───────────────────────────────────────── */
     .tips-box {
       margin-top: 1.1rem;
       padding: .8rem 1rem;
@@ -299,7 +343,6 @@
       transition: opacity .4s;
     }
 
-    /* ─── Result ─────────────────────────────────────────────── */
     #result-section { display: none; }
     #result-section.show { display: block; }
 
@@ -319,7 +362,6 @@
     .again-btn { width: 100%; margin-top: 1rem; padding: .7rem; background: none; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: .88rem; cursor: pointer; transition: all .2s; }
     .again-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ─── Error ──────────────────────────────────────────────── */
     .error-box { display: none; margin-top: 1rem; padding: .9rem 1.1rem; background: rgba(255,77,109,.08); border: 1px solid rgba(255,77,109,.3); border-radius: 10px; color: var(--danger); font-size: .95rem; line-height: 1.5; font-weight: 600; }
     .error-box.show { display: block; }
 
@@ -327,10 +369,8 @@
     .reload-page-btn.show { display: block; }
     .reload-page-btn:hover { background: rgba(255,77,109,.1); }
 
-    /* ─── Footer ─────────────────────────────────────────────── */
     .footer { text-align: center; font-size: .75rem; color: var(--muted); font-family: 'Space Mono', monospace; }
 
-    /* ─── Animations ─────────────────────────────────────────── */
     @keyframes pulse   { 0%,100%{opacity:1;transform:scale(1)}  50%{opacity:.5;transform:scale(.8)} }
     @keyframes spin    { to { transform: rotate(360deg); } }
     @keyframes breathe { 0%,100%{opacity:.4} 50%{opacity:1} }
@@ -380,6 +420,12 @@
       <button class="remove-btn" id="remove-btn" title="إزالة">✕</button>
     </div>
 
+    <!-- [جديد] تحذير الحجم الكبير -->
+    <div class="size-warning" id="size-warning">
+      <span class="sw-icon">⚠️</span>
+      <span id="size-warning-text">الملف كبير — سيتم ضغطه تلقائياً قبل الرفع لتجاوز حد الـ proxy.</span>
+    </div>
+
     <div class="error-box" id="error-box"></div>
 
     <button class="reload-page-btn" id="reload-page-btn" onclick="location.reload()">
@@ -388,8 +434,23 @@
 
     <button class="submit-btn" id="submit-btn" disabled>
       <span>🚀</span>
-      <span>ابدأ المعالجة</span>
+      <span id="submit-label">ابدأ المعالجة</span>
     </button>
+  </div>
+
+  <!-- ─── [جديد] Compression Section ───────────────────────── -->
+  <div class="card" id="compress-section">
+    <span class="compress-icon">🗜️</span>
+    <div class="compress-title">جاري ضغط الصوت…</div>
+    <div class="compress-sub">تقليص حجم الملف تلقائياً للتوافق مع الخادم</div>
+    <div class="compress-bar-wrap">
+      <div class="compress-bar-fill" id="compress-fill"></div>
+    </div>
+    <div class="compress-pct" id="compress-pct">0%</div>
+    <div class="compress-sizes">
+      <span id="compress-original">الحجم الأصلي: —</span>
+      <span id="compress-target">الهدف: أقل من 1.5MB</span>
+    </div>
   </div>
 
   <!-- ─── Loading Section ───────────────────────────────────── -->
@@ -403,18 +464,15 @@
     <div class="loading-title">جاري المعالجة…</div>
     <div class="loading-sub">لا تُغلق هذه الصفحة أو تُغيّر التبويب</div>
 
-    <!-- شريط التقدم الحقيقي -->
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="progress-fill"></div>
     </div>
 
-    <!-- صف الوقت: منقضٍ + تقدير -->
     <div class="timer-row">
       <span class="elapsed" id="elapsed-display">00:00</span>
       <span id="eta-display">الوقت المتوقع: ~2 دقيقة</span>
     </div>
 
-    <!-- الخطوات — كل خطوة بها وقتها التقديري -->
     <div class="progress-steps">
       <div class="step active" id="step-1">
         <div class="step-left"><div class="step-dot"></div> رفع ملف الصوت</div>
@@ -434,7 +492,6 @@
       </div>
     </div>
 
-    <!-- صندوق التعليمات المتدورة -->
     <div class="tips-box">
       <div class="tip-label">💡 تعليمات</div>
       <div class="tip-text" id="tip-text">يعمل الخادم الآن على معالجة ملفك — هذا قد يستغرق بضع دقائق حسب طول الصوت.</div>
@@ -469,42 +526,57 @@
 
 <script>
   // ─── DOM refs ────────────────────────────────────────────────
-  const dropZone      = document.getElementById('drop-zone');
-  const fileInput     = document.getElementById('audio-file');
-  const fileInfo      = document.getElementById('file-info');
-  const fileNameTxt   = document.getElementById('file-name-text');
-  const fileSizeTxt   = document.getElementById('file-size-text');
-  const removeBtn     = document.getElementById('remove-btn');
-  const submitBtn     = document.getElementById('submit-btn');
-  const uploadSec     = document.getElementById('upload-section');
-  const loadingSec    = document.getElementById('loading-section');
-  const resultSec     = document.getElementById('result-section');
-  const errorBox      = document.getElementById('error-box');
-  const reloadPageBtn = document.getElementById('reload-page-btn');
-  const resultVideo   = document.getElementById('result-video');
-  const downloadBtn   = document.getElementById('download-btn');
-  const againBtn      = document.getElementById('again-btn');
-  const webhookInput  = document.getElementById('webhook-url');
-  const progressFill  = document.getElementById('progress-fill');
-  const elapsedDisp   = document.getElementById('elapsed-display');
-  const etaDisp       = document.getElementById('eta-display');
-  const tipText       = document.getElementById('tip-text');
+  const dropZone       = document.getElementById('drop-zone');
+  const fileInput      = document.getElementById('audio-file');
+  const fileInfo       = document.getElementById('file-info');
+  const fileNameTxt    = document.getElementById('file-name-text');
+  const fileSizeTxt    = document.getElementById('file-size-text');
+  const removeBtn      = document.getElementById('remove-btn');
+  const submitBtn      = document.getElementById('submit-btn');
+  const submitLabel    = document.getElementById('submit-label');
+  const uploadSec      = document.getElementById('upload-section');
+  const compressSec    = document.getElementById('compress-section');
+  const loadingSec     = document.getElementById('loading-section');
+  const resultSec      = document.getElementById('result-section');
+  const errorBox       = document.getElementById('error-box');
+  const reloadPageBtn  = document.getElementById('reload-page-btn');
+  const resultVideo    = document.getElementById('result-video');
+  const downloadBtn    = document.getElementById('download-btn');
+  const againBtn       = document.getElementById('again-btn');
+  const webhookInput   = document.getElementById('webhook-url');
+  const progressFill   = document.getElementById('progress-fill');
+  const elapsedDisp    = document.getElementById('elapsed-display');
+  const etaDisp        = document.getElementById('eta-display');
+  const tipText        = document.getElementById('tip-text');
+  const sizeWarning    = document.getElementById('size-warning');
+  const sizeWarningTxt = document.getElementById('size-warning-text');
+  const compressFill   = document.getElementById('compress-fill');
+  const compressPct    = document.getElementById('compress-pct');
+  const compressOrig   = document.getElementById('compress-original');
 
   // ─── State ──────────────────────────────────────────────────
   let selectedFile    = null;
   let pollingInterval = null;
-  let elapsedInterval = null;   // ← عداد الثواني المستقل
+  let elapsedInterval = null;
   let wakeLock        = null;
-  let startTime       = 0;      // وقت بدء الـ polling
+  let startTime       = 0;
 
   // ─── Config ─────────────────────────────────────────────────
   const SUBMIT_WEBHOOK    = 'https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4';
   const POLL_INTERVAL_MS  = 5000;
   const POLL_TIMEOUT_MS   = 12 * 60 * 1000;
-  const UPLOAD_TIMEOUT_MS = 10 * 60 * 1000;  // 10 دقائق للرفع (للملفات الكبيرة)
-  const EST_TOTAL_SEC     = 120;  // تقدير مدة المعالجة بالثواني (للـ progress bar)
+  const UPLOAD_TIMEOUT_MS = 10 * 60 * 1000;
+  const EST_TOTAL_SEC     = 120;
 
-  // ─── Tips: تعليمات تتبدل تلقائياً كل 12 ثانية ───────────────
+  // ────────────────────────────────────────────────────────────
+  // [جديد] حدود حجم الملف
+  // HuggingFace nginx proxy: client_max_body_size الافتراضي = 1MB
+  // نضبط الحد على 1.4MB لنترك هامش أمان
+  // ────────────────────────────────────────────────────────────
+  const MAX_SAFE_SIZE_BYTES  = 1.4 * 1024 * 1024;  // 1.4 MB — حد HF proxy
+  const COMPRESS_BITRATE_BPS = 64_000;              // 64 kbps — جودة كافية للصوت
+
+  // ─── Tips ───────────────────────────────────────────────────
   const TIPS = [
     'يعمل الخادم الآن على معالجة ملفك — هذا قد يستغرق بضع دقائق حسب طول الصوت.',
     '⚠️ لا تُغلق هذه النافذة أو التبويب — المعالجة تعمل في الخلفية وستكتمل تلقائياً.',
@@ -516,8 +588,7 @@
   let tipIndex = 0, tipTimer = null;
 
   function startTips() {
-    tipIndex = 0;
-    tipText.textContent = TIPS[0];
+    tipIndex = 0; tipText.textContent = TIPS[0];
     tipTimer = setInterval(() => {
       tipText.style.opacity = '0';
       setTimeout(() => {
@@ -527,48 +598,33 @@
       }, 400);
     }, 12000);
   }
-  function stopTips() {
-    if (tipTimer) { clearInterval(tipTimer); tipTimer = null; }
-  }
+  function stopTips() { if (tipTimer) { clearInterval(tipTimer); tipTimer = null; } }
 
-  // ─── Elapsed timer (يعمل كل ثانية مستقلاً عن الـ polling) ───
+  // ─── Elapsed timer ──────────────────────────────────────────
   function startElapsedTimer() {
     elapsedInterval = setInterval(() => {
       const sec = Math.floor((Date.now() - startTime) / 1000);
       const m = Math.floor(sec / 60).toString().padStart(2,'0');
       const s = (sec % 60).toString().padStart(2,'0');
       elapsedDisp.textContent = `${m}:${s}`;
-      // شريط التقدم يتحرك حتى 90% بناءً على الوقت الحقيقي
       const pct = Math.min((sec / EST_TOTAL_SEC) * 90, 90);
       progressFill.style.width = pct + '%';
-      // تحديث الـ eta
       const remaining = Math.max(EST_TOTAL_SEC - sec, 0);
-      etaDisp.textContent = remaining > 0
-        ? `متبقي تقريباً: ~${remaining}ث`
-        : 'يُكمل المعالجة…';
+      etaDisp.textContent = remaining > 0 ? `متبقي تقريباً: ~${remaining}ث` : 'يُكمل المعالجة…';
     }, 1000);
   }
-  function stopElapsedTimer() {
-    if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; }
-  }
+  function stopElapsedTimer() { if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; } }
 
-  // ─── Steps: مبنية على elapsed_seconds الحقيقي من الخادم ──────
-  // الخريطة: متى تتحوّل كل خطوة للـ active (بالثواني)
-  //   step-2 → بمجرد استلام job_id (الرفع انتهى)
-  //   step-3 → بعد 18ث (تنزيل الفيديو من Drive يأخذ ~15-20ث)
-  //   step-4 → بعد 70ث (FFmpeg يأخذ الوقت الأطول)
+  // ─── Steps ──────────────────────────────────────────────────
   const STEP_THRESHOLDS = { 2: 3, 3: 18, 4: 70 };
-
   function updateStepsFromElapsed(elapsedSec) {
-    // نحدد أي خطوة يجب أن تكون active الآن
-    let currentStep = 2; // بعد الرفع، نبدأ من 2
+    let currentStep = 2;
     if (elapsedSec >= STEP_THRESHOLDS[4]) currentStep = 4;
     else if (elapsedSec >= STEP_THRESHOLDS[3]) currentStep = 3;
     else if (elapsedSec >= STEP_THRESHOLDS[2]) currentStep = 2;
-
     for (let i = 1; i <= 4; i++) {
       const s = document.getElementById(`step-${i}`);
-      if (!s || s.classList.contains('done')) continue; // لا تتراجع عن done
+      if (!s || s.classList.contains('done')) continue;
       s.classList.remove('active', 'done');
       if (i < currentStep) s.classList.add('done');
       else if (i === currentStep) s.classList.add('active');
@@ -584,24 +640,118 @@
     localStorage.setItem(STORAGE_KEY, webhookInput.value.trim())
   );
 
-  // ─── Derive poll URL from submit URL ─────────────────────────
   function getPollUrl() {
     try {
-      const submitUrl = webhookInput.value.trim();
-      const u = new URL(submitUrl);
+      const u = new URL(webhookInput.value.trim());
       return `${u.protocol}//${u.host}/webhook/poll-video`;
-    } catch {
-      return 'https://tasneemahmed-n8n.hf.space/webhook/poll-video';
-    }
+    } catch { return 'https://tasneemahmed-n8n.hf.space/webhook/poll-video'; }
   }
 
-  // ─── File handling ───────────────────────────────────────────
+  // ─── Format bytes ────────────────────────────────────────────
   function formatBytes(bytes) {
     if (bytes < 1024)    return bytes + ' B';
     if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
     return (bytes/1048576).toFixed(2) + ' MB';
   }
 
+  // ────────────────────────────────────────────────────────────
+  // [جديد] دالة الضغط الصوتي في المتصفح
+  // تستخدم: AudioContext (decode) + MediaRecorder (encode Opus/WebM)
+  // المخرج: File صغير الحجم بصيغة .webm بدل الملف الأصلي الكبير
+  // ────────────────────────────────────────────────────────────
+  async function compressAudioInBrowser(file, onProgress) {
+    // ── فك ترميز الصوت الأصلي ──────────────────────────────────
+    const arrayBuffer = await file.arrayBuffer();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) throw new Error('AudioContext غير مدعوم في هذا المتصفح');
+    const audioCtx   = new AudioCtx();
+    let   audioBuffer;
+    try {
+      audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      audioCtx.close();
+      throw new Error('تعذّر فك ترميز الصوت: ' + e.message);
+    }
+
+    // ── اختيار mimeType الأنسب ─────────────────────────────────
+    const preferredTypes = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/ogg',
+      ''
+    ];
+    const mimeType = preferredTypes.find(t => !t || MediaRecorder.isTypeSupported(t)) || '';
+
+    // ── إعداد MediaRecorder على stream خيالي ──────────────────
+    const dest     = audioCtx.createMediaStreamDestination();
+    const source   = audioCtx.createBufferSource();
+    source.buffer  = audioBuffer;
+    source.connect(dest);
+
+    const recOptions = { audioBitsPerSecond: COMPRESS_BITRATE_BPS };
+    if (mimeType) recOptions.mimeType = mimeType;
+
+    let recorder;
+    try {
+      recorder = new MediaRecorder(dest.stream, recOptions);
+    } catch (e) {
+      audioCtx.close();
+      throw new Error('MediaRecorder غير مدعوم بهذا الترميز: ' + e.message);
+    }
+
+    const chunks = [];
+    return new Promise((resolve, reject) => {
+      recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+      recorder.onerror = e => { audioCtx.close(); reject(new Error('خطأ في الضغط: ' + (e.error?.message || e))); };
+      recorder.onstop  = () => {
+        audioCtx.close();
+        const finalType = mimeType || 'audio/webm';
+        const ext       = finalType.includes('ogg') ? 'ogg' : 'webm';
+        const blob      = new Blob(chunks, { type: finalType });
+        const newName   = file.name.replace(/\.[^.]+$/, '') + '.' + ext;
+        resolve(new File([blob], newName, { type: finalType }));
+      };
+
+      // تتبع التقدم بناءً على الوقت الحقيقي للتشغيل
+      const duration   = audioBuffer.duration;
+      const startMs    = Date.now();
+      const progressIv = setInterval(() => {
+        const elapsed  = (Date.now() - startMs) / 1000;
+        const progress = Math.min(elapsed / duration, 0.97);
+        if (onProgress) onProgress(progress);
+        if (progress >= 0.97) clearInterval(progressIv);
+      }, 300);
+
+      source.onended = () => {
+        clearInterval(progressIv);
+        if (onProgress) onProgress(1);
+        recorder.stop();
+      };
+
+      source.start(0);
+      recorder.start(200); // 200ms chunks
+    });
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // [جديد] عرض/إخفاء تحذير حجم الملف عند الاختيار
+  // ────────────────────────────────────────────────────────────
+  function updateSizeWarning(file) {
+    if (!file) { sizeWarning.classList.remove('show'); return; }
+    if (file.size > MAX_SAFE_SIZE_BYTES) {
+      sizeWarningTxt.textContent =
+        `حجم الملف (${formatBytes(file.size)}) يتجاوز حد الـ proxy (~1.4 MB). `
+        + `سيتم ضغطه تلقائياً إلى ~64 kbps قبل الرفع.`;
+      sizeWarning.classList.add('show');
+      submitLabel.textContent = 'ضغط ورفع';
+    } else {
+      sizeWarning.classList.remove('show');
+      submitLabel.textContent = 'ابدأ المعالجة';
+    }
+  }
+
+  // ─── File handling ───────────────────────────────────────────
   function setFile(file) {
     if (!file) return;
     selectedFile = file;
@@ -610,12 +760,15 @@
     fileInfo.classList.add('show');
     submitBtn.disabled = false;
     hideError();
+    updateSizeWarning(file); // [جديد]
   }
 
   function clearFile() {
     selectedFile = null;
     fileInput.value = '';
     fileInfo.classList.remove('show');
+    sizeWarning.classList.remove('show'); // [جديد]
+    submitLabel.textContent = 'ابدأ المعالجة'; // [جديد]
     submitBtn.disabled = true;
   }
 
@@ -632,84 +785,59 @@
   });
 
   // ─── Error helpers ───────────────────────────────────────────
-  function showError(msg) {
-    errorBox.textContent = msg;
-    errorBox.classList.add('show');
-  }
-
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function showFatalError(msg) {
     showError(msg);
     loadingSec.classList.add('failed');
     reloadPageBtn.classList.add('show');
     submitBtn.style.display = 'none';
   }
-
   function hideError() {
-    errorBox.classList.remove('show');
-    errorBox.textContent = '';
-    reloadPageBtn.classList.remove('show');
-    submitBtn.style.display = 'flex';
+    errorBox.classList.remove('show'); errorBox.textContent = '';
+    reloadPageBtn.classList.remove('show'); submitBtn.style.display = 'flex';
     loadingSec.classList.remove('failed');
   }
 
-  // ─── Step done helpers ───────────────────────────────────────
-  function setStepDone(n) {
-    const s = document.getElementById(`step-${n}`);
-    if (s) { s.classList.remove('active'); s.classList.add('done'); }
-  }
+  // ─── Step helpers ────────────────────────────────────────────
+  function setStepDone(n) { const s = document.getElementById(`step-${n}`); if (s) { s.classList.remove('active'); s.classList.add('done'); } }
   function setAllStepsDone() { for (let i = 1; i <= 4; i++) setStepDone(i); }
   function resetSteps() {
-    for (let i = 1; i <= 4; i++) {
-      const s = document.getElementById(`step-${i}`);
-      if (s) s.classList.remove('active','done');
-    }
+    for (let i = 1; i <= 4; i++) { const s = document.getElementById(`step-${i}`); if (s) s.classList.remove('active','done'); }
     document.getElementById('step-1').classList.add('active');
   }
 
   // ─── Section visibility ──────────────────────────────────────
-  // ⚠️ لا تستخدم '' لأنها تُعيد لـ CSS الذي يقول display:none
   function showSection(name) {
-    uploadSec .style.display = name === 'upload'  ? 'block' : 'none';
-    loadingSec.style.display = name === 'loading' ? 'block' : 'none';
-    resultSec .style.display = name === 'result'  ? 'block' : 'none';
+    uploadSec  .style.display = name === 'upload'    ? 'block' : 'none';
+    compressSec.style.display = name === 'compress'  ? 'block' : 'none';
+    loadingSec .style.display = name === 'loading'   ? 'block' : 'none';
+    resultSec  .style.display = name === 'result'    ? 'block' : 'none';
   }
 
   // ─── Wake Lock ───────────────────────────────────────────────
-  async function requestWakeLock() {
-    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
-  }
-  async function releaseWakeLock() {
-    if (wakeLock) { try { await wakeLock.release(); wakeLock = null; } catch(e) {} }
-  }
+  async function requestWakeLock()  { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {} }
+  async function releaseWakeLock()  { if (wakeLock) { try { await wakeLock.release(); wakeLock = null; } catch(e) {} } }
 
-  // ─── Exit protection ─────────────────────────────────────────
-  function enableExitProtection()  { window.onbeforeunload = () => 'جاري المعالجة... هل أنت متأكد؟'; }
-  function disableExitProtection() { window.onbeforeunload = null; }
+  function enableExitProtection()   { window.onbeforeunload = () => 'جاري المعالجة... هل أنت متأكد؟'; }
+  function disableExitProtection()  { window.onbeforeunload = null; }
 
-  // ─── Cleanup ─────────────────────────────────────────────────
   function cleanup() {
-    disableExitProtection();
-    releaseWakeLock();
-    stopElapsedTimer();
-    stopTips();
+    disableExitProtection(); releaseWakeLock(); stopElapsedTimer(); stopTips();
     if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
     window.removeEventListener('offline', handleOffline);
   }
 
-  // ─── Offline handler ─────────────────────────────────────────
   function handleOffline() {
-    console.warn('⛔ Offline detected — stopping polling');
+    console.warn('⛔ Offline');
     cleanup();
     showFatalError('❌ انقطع الاتصال بالإنترنت! فشلت العملية. أعد تحميل الصفحة وحاول مرة أخرى.');
     showSection('upload');
   }
 
-  // ─── Fetch with manual timeout (compatible with all browsers) ─
   function fetchWithTimeout(url, options, timeoutMs) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
-    return fetch(url, { ...options, signal: controller.signal })
-      .finally(() => clearTimeout(timer));
+    return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -718,67 +846,116 @@
   submitBtn.addEventListener('click', async () => {
     hideError();
 
-    if (!navigator.onLine) { showFatalError('❌ لا يوجد اتصال بالإنترنت.'); return; }
-
+    if (!navigator.onLine)  { showFatalError('❌ لا يوجد اتصال بالإنترنت.'); return; }
     const webhookUrl = webhookInput.value.trim();
-    if (!webhookUrl)  return showError('⚠️ تأكد من رابط Webhook');
-    if (!selectedFile) return showError('⚠️ اختر ملفاً أولاً');
+    if (!webhookUrl)         return showError('⚠️ تأكد من رابط Webhook');
+    if (!selectedFile)       return showError('⚠️ اختر ملفاً أولاً');
 
-    // ── إعدادات البداية ─────────────────────────────────────────
     await requestWakeLock();
     enableExitProtection();
     window.addEventListener('offline', handleOffline);
 
+    // ────────────────────────────────────────────────────────────
+    // [جديد] مرحلة الضغط: إذا كان الملف أكبر من الحد المسموح به
+    // ────────────────────────────────────────────────────────────
+    let fileToUpload = selectedFile;
+
+    if (selectedFile.size > MAX_SAFE_SIZE_BYTES) {
+      console.log(`📦 File too large (${formatBytes(selectedFile.size)}) — compressing…`);
+      showSection('compress');
+      compressFill.style.width = '0%';
+      compressPct.textContent  = '0%';
+      compressOrig.textContent = `الحجم الأصلي: ${formatBytes(selectedFile.size)}`;
+
+      try {
+        fileToUpload = await compressAudioInBrowser(selectedFile, (progress) => {
+          const pct = Math.round(progress * 100);
+          compressFill.style.width = pct + '%';
+          compressPct.textContent  = pct + '%';
+        });
+        console.log(`✅ Compressed: ${formatBytes(selectedFile.size)} → ${formatBytes(fileToUpload.size)}`);
+
+        // إذا بعد الضغط لا يزال كبيراً جداً، نحذّر لكن نكمل
+        if (fileToUpload.size > MAX_SAFE_SIZE_BYTES) {
+          console.warn(`⚠️ Still large after compression: ${formatBytes(fileToUpload.size)}`);
+        }
+      } catch (compressErr) {
+        // [جديد] إذا فشل الضغط: نُبلّغ المستخدم برسالة واضحة
+        cleanup();
+        showError(
+          `❌ فشل ضغط الصوت: ${compressErr.message}. `
+          + `حاول تحويل الملف يدوياً لـ MP3 بجودة أقل أو اختصار مدته.`
+        );
+        showSection('upload');
+        return;
+      }
+    }
+
+    // ── المرحلة 1: رفع الملف ─────────────────────────────────────
     showSection('loading');
     resetSteps();
     progressFill.style.width = '0%';
-    elapsedDisp.textContent = '00:00';
-    etaDisp.textContent = 'الوقت المتوقع: ~2 دقيقة';
+    elapsedDisp.textContent  = '00:00';
+    etaDisp.textContent      = 'الوقت المتوقع: ~2 دقيقة';
     startTips();
 
-    // ── المرحلة 1: رفع الملف ─────────────────────────────────────
     let jobId = null;
     try {
       const formData = new FormData();
-      formData.append('audio_file', selectedFile, selectedFile.name);
+      formData.append('audio_file', fileToUpload, fileToUpload.name);
 
       const response = await fetchWithTimeout(webhookUrl, {
         method: 'POST',
         body: formData
       }, UPLOAD_TIMEOUT_MS);
 
-      // ── قراءة الاستجابة كـ ArrayBuffer دائماً ────────────────
       const buffer      = await response.arrayBuffer();
       const bytes       = new Uint8Array(buffer);
       const contentType = response.headers.get('Content-Type') || '';
       const statusCode  = response.status;
+      const rawText     = new TextDecoder().decode(buffer.slice(0, 400));
 
-      // تحويل لنص للـ debug ولكشف HTML errors
-      const rawText = new TextDecoder().decode(buffer.slice(0, 300));
-      console.log(`Submit response: status=${statusCode} CT="${contentType}" size=${bytes.length}`);
-      console.log(`Submit body preview: ${rawText}`);
+      console.log(`Submit: status=${statusCode} CT="${contentType}" size=${bytes.length}`);
+      console.log(`Body preview: ${rawText}`);
 
-      // ── كشف HTTP errors أولاً ────────────────────────────────
-      // HuggingFace proxy يُعيد 502/503/504 مع صفحة HTML عند timeout
       if (!response.ok) {
+        // ────────────────────────────────────────────────────────
+        // [جديد] رسائل خطأ أوضح لكل كود HTTP محتمل
+        // ────────────────────────────────────────────────────────
+        if (statusCode === 413) {
+          // Request Entity Too Large — الملف لا يزال أكبر من حد nginx
+          throw new Error(
+            `❌ الملف لا يزال أكبر من الحد المسموح به في الخادم (413). `
+            + `الحجم بعد الضغط: ${formatBytes(fileToUpload.size)}. `
+            + `حاول تقليص مدة الصوت أو اضغط الملف يدوياً قبل الرفع.`
+          );
+        }
+        if (statusCode === 500) {
+          // غالباً HuggingFace proxy يعيد 500 بدل 413 عند تجاوز الحجم
+          const isHtml = rawText.includes('<html') || rawText.includes('<!DOCTYPE');
+          throw new Error(
+            `❌ خطأ في الخادم (500)${isHtml ? ' — الـ proxy رفض الطلب' : ''}. `
+            + `السبب الأرجح: حجم الملف (${formatBytes(fileToUpload.size)}) `
+            + `يتجاوز حد الـ proxy حتى بعد الضغط. `
+            + `جرب ملف أقصر مدة أو بجودة أقل.`
+          );
+        }
         if (statusCode === 504 || statusCode === 502 || statusCode === 503) {
           throw new Error(
-            `الخادم استغرق وقتاً طويلاً جداً (${statusCode}). ` +
-            `تأكد من تفعيل workflow_submit.json الجديد الذي يرد فوراً بـ job_id ` +
-            `بدلاً من الانتظار حتى نهاية المعالجة.`
+            `الخادم استغرق وقتاً طويلاً جداً (${statusCode}). `
+            + `تأكد من تفعيل workflow_submit الذي يرد فوراً بـ job_id.`
           );
         }
         throw new Error(`فشل الرفع (${statusCode}): ${rawText.slice(0, 150)}`);
       }
 
-      // ── كشف MP4 بالـ magic bytes (offset 4 = "ftyp") ─────────
+      // كشف MP4 مباشر
       const isMp4 = bytes.length > 8
         && bytes[4] === 0x66 && bytes[5] === 0x74
         && bytes[6] === 0x79 && bytes[7] === 0x70;
 
-      // ── CASE A: الفيديو جاء مباشرةً (workflow قديم) ──────────
       if (isMp4 || contentType.includes('video')) {
-        console.log('⚡ Direct video response — displaying result');
+        console.log('⚡ Direct video response');
         const videoBlob = new Blob([buffer], { type: 'video/mp4' });
         const videoUrl  = URL.createObjectURL(videoBlob);
         progressFill.style.transition = 'width .6s ease';
@@ -791,7 +968,6 @@
         return;
       }
 
-      // ── CASE B: JSON → job_id (workflow جديد) ────────────────
       if (contentType.includes('json') || rawText.trim().startsWith('{')) {
         try {
           const data = JSON.parse(new TextDecoder().decode(buffer));
@@ -800,29 +976,21 @@
           throw new Error(`الخادم أعاد JSON غير صالح: ${rawText.slice(0, 120)}`);
         }
         if (!jobId) {
-          throw new Error(
-            `الخادم أعاد JSON بدون job_id. ` +
-            `محتوى الرد: ${rawText.slice(0, 150)}`
-          );
+          throw new Error(`الخادم أعاد JSON بدون job_id: ${rawText.slice(0, 150)}`);
         }
         console.log(`✅ Polling mode — job_id: ${jobId}`);
         setStepDone(1);
         startTime = Date.now();
         startElapsedTimer();
-
       } else {
-        // ── CASE C: استجابة مجهولة — اعرض المحتوى الفعلي ───────
         const isHtml = rawText.includes('<html') || rawText.includes('<!DOCTYPE');
         if (isHtml) {
           throw new Error(
-            `الخادم أعاد صفحة HTML (على الأرجح 504 Timeout من HuggingFace). ` +
-            `الحل: فعّل workflow_submit.json الجديد كي يرد فوراً بـ job_id.`
+            `الخادم أعاد صفحة HTML (على الأرجح timeout من HuggingFace proxy). `
+            + `تأكد من تفعيل workflow_submit الجديد.`
           );
         }
-        throw new Error(
-          `استجابة غير متوقعة (${statusCode}, ${contentType || 'no-CT'}): ` +
-          `${rawText.slice(0, 120)}`
-        );
+        throw new Error(`استجابة غير متوقعة (${statusCode}, ${contentType || 'no-CT'}): ${rawText.slice(0, 120)}`);
       }
 
     } catch (err) {
@@ -830,27 +998,24 @@
       if (err.name === 'AbortError') {
         showFatalError('❌ انتهت مهلة الرفع — الملف كبير جداً أو الاتصال بطيء. حاول مرة أخرى.');
       } else {
-        showFatalError('❌ ' + (err.message || 'خطأ غير متوقع'));
+        showFatalError(err.message || '❌ خطأ غير متوقع');
       }
       showSection('upload');
       return;
     }
 
-    // ── إذا وصلنا هنا = workflow جديد = نبدأ الـ polling ─────────
+    // ── Polling ───────────────────────────────────────────────────
     const pollUrl = getPollUrl();
     let attempts  = 0;
-
-    console.log(`🔄 Starting polling: ${pollUrl}?job_id=${jobId}`);
+    console.log(`🔄 Polling: ${pollUrl}?job_id=${jobId}`);
 
     pollingInterval = setInterval(async () => {
-      const elapsed = Date.now() - startTime;
+      const elapsed    = Date.now() - startTime;
       const elapsedSec = Math.floor(elapsed / 1000);
       attempts++;
 
-      // تحديث الخطوات بناءً على الوقت الحقيقي المنقضي
       updateStepsFromElapsed(elapsedSec);
 
-      // Timeout guard
       if (elapsed > POLL_TIMEOUT_MS) {
         cleanup();
         showFatalError('❌ انتهت مهلة الانتظار (12 دقيقة). يرجى المحاولة مرة أخرى.');
@@ -861,81 +1026,50 @@
       try {
         const response = await fetchWithTimeout(
           `${pollUrl}?job_id=${encodeURIComponent(jobId)}`,
-          { method: 'GET' },
-          30000
+          { method: 'GET' }, 30000
         );
+        if (!response.ok) { console.warn(`Poll #${attempts}: HTTP ${response.status}`); return; }
 
-        if (!response.ok) {
-          console.warn(`Poll #${attempts}: HTTP ${response.status} — retrying`);
-          return; // لا توقف الـ polling، حاول مرة أخرى
-        }
-
-        // ── قراءة الجسم مرة واحدة كـ ArrayBuffer ──────────────────
-        // هذا يتجنب مشكلة قراءة stream مرتين
         const buffer = await response.arrayBuffer();
         const bytes  = new Uint8Array(buffer);
 
-        // ── كشف نوع الملف من الـ magic bytes ──────────────────────
-        // MP4 يبدأ بـ [??][??][??][??] 66 74 79 70  (....ftyp)
-        // الـ offset 4 يحتوي على "ftyp" = 0x66 0x74 0x79 0x70
         const isMp4 = bytes.length > 8
-          && bytes[4] === 0x66  // f
-          && bytes[5] === 0x74  // t
-          && bytes[6] === 0x79  // y
-          && bytes[7] === 0x70; // p
+          && bytes[4] === 0x66 && bytes[5] === 0x74
+          && bytes[6] === 0x79 && bytes[7] === 0x70;
 
         const contentType = response.headers.get('Content-Type') || '';
-        const isVideo = contentType.includes('video')
-                     || contentType.includes('octet-stream')
-                     || isMp4; // ← الكشف بالـ magic bytes كـ fallback
+        const isVideo = contentType.includes('video') || contentType.includes('octet-stream') || isMp4;
 
         console.log(`Poll #${attempts}: CT="${contentType}" isMp4=${isMp4} size=${bytes.length}`);
 
-        // ✅ استلمنا الفيديو
         if (isVideo && bytes.length > 1000) {
-          clearInterval(pollingInterval);
-          pollingInterval = null;
-
+          clearInterval(pollingInterval); pollingInterval = null;
           const videoBlob = new Blob([buffer], { type: 'video/mp4' });
           const videoUrl  = URL.createObjectURL(videoBlob);
-
           progressFill.style.transition = 'width .6s ease';
           progressFill.style.width = '100%';
           setAllStepsDone();
-
           resultVideo.src  = videoUrl;
           downloadBtn.href = videoUrl;
-
           cleanup();
           setTimeout(() => showSection('result'), 500);
           return;
         }
 
-        // 🔍 ليس فيديو → حاول JSON status
         try {
-          const text = new TextDecoder().decode(buffer);
-          const data = JSON.parse(text);
+          const data = JSON.parse(new TextDecoder().decode(buffer));
           console.log(`Poll #${attempts}: status=${data.status} elapsed=${elapsedSec}s`);
-
           if (data.status === 'error') {
-            clearInterval(pollingInterval);
-            pollingInterval = null;
+            clearInterval(pollingInterval); pollingInterval = null;
             cleanup();
             showFatalError('❌ فشلت المعالجة على الخادم: ' + (data.message || 'خطأ غير معروف'));
             showSection('upload');
           }
-          // processing | not_found → نكمل
-        } catch {
-          // لا JSON ولا فيديو — ربما استجابة فارغة، نعيد المحاولة
-          console.warn(`Poll #${attempts}: unrecognized response, retrying...`);
-        }
+        } catch { console.warn(`Poll #${attempts}: unrecognized response`); }
 
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.warn(`Poll #${attempts} error (retrying):`, err.message);
-        }
+        if (err.name !== 'AbortError') console.warn(`Poll #${attempts} error:`, err.message);
       }
-
     }, POLL_INTERVAL_MS);
 
   }); // end submitBtn click
@@ -943,12 +1077,8 @@
   // ─── Again Button ────────────────────────────────────────────
   againBtn.addEventListener('click', () => {
     if (resultVideo.src) URL.revokeObjectURL(resultVideo.src);
-    resultVideo.src  = '';
-    downloadBtn.href = '#';
-    clearFile();
-    hideError();
-    cleanup();
-    resetSteps();
+    resultVideo.src  = ''; downloadBtn.href = '#';
+    clearFile(); hideError(); cleanup(); resetSteps();
     progressFill.style.width = '0%';
     elapsedDisp.textContent  = '00:00';
     etaDisp.textContent      = 'الوقت المتوقع: ~2 دقيقة';
