@@ -8,62 +8,189 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:      #0a0c10; --surface: #111418; --border: #1e2530;
-      --accent:  #00e5ff; --accent2: #7b61ff; --danger: #ff4d6d;
-      --success: #00c896; --text: #e8edf5; --muted: #5a6478;
-      --radius:  16px;    --glow: 0 0 40px rgba(0,229,255,.15);
+      --bg:      #0a0c10;
+      --surface: #111418;
+      --border:  #1e2530;
+      --accent:  #00e5ff;
+      --accent2: #7b61ff;
+      --danger:  #ff4d6d;
+      --success: #00c896;
+      --text:    #e8edf5;
+      --muted:   #5a6478;
+      --radius:  16px;
+      --glow:    0 0 40px rgba(0,229,255,.15);
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans Arabic', sans-serif; overflow-x: hidden; }
-    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 70% 50% at 20% 20%, rgba(0,229,255,.06) 0%, transparent 60%), radial-gradient(ellipse 60% 60% at 80% 80%, rgba(123,97,255,.06) 0%, transparent 60%); pointer-events: none; }
-    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
-    .page { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; gap: 2rem; }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(0,229,255,.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 80% 80%, rgba(123,97,255,.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 2rem;
+    }
+
+    /* ── Header ── */
     .header { text-align: center; animation: fadeUp .5s .1s ease both; }
-    .header .badge { display: inline-flex; align-items: center; gap: .5rem; padding: .35rem .9rem; border: 1px solid var(--accent); border-radius: 999px; font-size: .72rem; font-family: 'Space Mono', monospace; color: var(--accent); letter-spacing: .08em; margin-bottom: 1.2rem; background: rgba(0,229,255,.05); }
-    .header .badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.5s infinite; }
-    .header h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
-    .header h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header .badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .35rem .9rem;
+      border: 1px solid var(--accent); border-radius: 999px;
+      font-size: .72rem; font-family: 'Space Mono', monospace;
+      color: var(--accent); letter-spacing: .08em;
+      margin-bottom: 1.2rem;
+      background: rgba(0,229,255,.05);
+    }
+    .header .badge span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); animation: pulse 1.5s infinite;
+    }
+    .header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700; letter-spacing: -.02em; line-height: 1.15;
+    }
+    .header h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
     .header p { margin-top: .75rem; color: var(--muted); font-size: .95rem; font-weight: 300; }
 
-    .card { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--glow); animation: fadeUp .5s ease both; }
+    /* ── Card ── */
+    .card {
+      width: 100%; max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--glow);
+      animation: fadeUp .5s ease both;
+    }
 
-    .drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 2.5rem 1.5rem; text-align: center; cursor: pointer; transition: all .25s; position: relative; background: rgba(255,255,255,.015); }
-    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: rgba(0,229,255,.04); }
-    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    /* ── Drop Zone ── */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px; padding: 2.5rem 1.5rem;
+      text-align: center; cursor: pointer;
+      transition: all .25s; position: relative;
+      background: rgba(255,255,255,.015);
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--accent); background: rgba(0,229,255,.04);
+    }
+    .drop-zone input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
     .drop-zone .icon { font-size: 2.5rem; margin-bottom: .8rem; display: block; }
     .drop-zone .label { font-size: 1rem; font-weight: 500; margin-bottom: .4rem; }
     .drop-zone .sublabel { font-size: .8rem; color: var(--muted); }
 
-    .file-info { display: none; align-items: center; gap: 1rem; background: rgba(0,229,255,.06); border: 1px solid rgba(0,229,255,.25); border-radius: 10px; padding: 1rem 1.2rem; margin-top: 1rem; }
+    /* ── File Info ── */
+    .file-info {
+      display: none; align-items: center; gap: 1rem;
+      background: rgba(0,229,255,.06);
+      border: 1px solid rgba(0,229,255,.25);
+      border-radius: 10px; padding: 1rem 1.2rem; margin-top: 1rem;
+    }
     .file-info.show { display: flex; }
-    .file-info .file-icon { width: 40px; height: 40px; background: rgba(0,229,255,.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .file-info .file-icon {
+      width: 40px; height: 40px;
+      background: rgba(0,229,255,.15); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
     .file-info .file-name { font-size: .88rem; font-weight: 500; color: var(--accent); word-break: break-all; }
     .file-info .file-size { font-size: .75rem; color: var(--muted); margin-top: .15rem; }
-    .file-info .remove-btn { margin-right: auto; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: .25rem; transition: color .2s; flex-shrink: 0; }
+    .file-info .remove-btn {
+      margin-right: auto; background: none; border: none;
+      color: var(--muted); cursor: pointer; font-size: 1.1rem;
+      padding: .25rem; transition: color .2s; flex-shrink: 0;
+    }
     .file-info .remove-btn:hover { color: var(--danger); }
 
-    .size-warning { display: none; align-items: center; gap: .6rem; margin-top: .6rem; padding: .6rem .9rem; background: rgba(255,193,7,.07); border: 1px solid rgba(255,193,7,.3); border-radius: 8px; font-size: .78rem; color: #ffc107; line-height: 1.45; }
+    /* ── Size Warning ── */
+    .size-warning {
+      display: none; align-items: center; gap: .6rem;
+      margin-top: .6rem; padding: .6rem .9rem;
+      background: rgba(255,193,7,.07);
+      border: 1px solid rgba(255,193,7,.3);
+      border-radius: 8px; font-size: .78rem; color: #ffc107; line-height: 1.45;
+    }
     .size-warning.show { display: flex; }
 
-    .submit-btn { margin-top: 1.5rem; width: 100%; padding: .9rem 1.5rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; border-radius: 10px; color: #000; font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: .6rem; }
+    /* ── Submit Button ── */
+    .submit-btn {
+      margin-top: 1.5rem; width: 100%;
+      padding: .9rem 1.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 10px;
+      color: #000; font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      transition: all .25s;
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+    }
     .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,.3); }
     .submit-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
+    /* ── Compress Section ── */
     #compress-section { display: none; text-align: center; }
     #compress-section.show { display: block; }
     .compress-icon { font-size: 2.5rem; margin-bottom: .8rem; animation: breathe 1.5s ease-in-out infinite; display: block; }
     .compress-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .3rem; }
-    .compress-sub { color: var(--muted); font-size: .82rem; margin-bottom: 1.1rem; }
-    .compress-bar-wrap { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 999px; height: 6px; overflow: hidden; margin-bottom: .5rem; }
-    .compress-bar-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #ffc107, #ff9800); transition: width .8s ease; }
-    .compress-bar-fill::after { content: ''; display: block; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); animation: shimmer 1.8s infinite; }
-    .compress-pct { font-family: 'Space Mono', monospace; font-size: .72rem; color: #ffc107; }
+    .compress-sub   { color: var(--muted); font-size: .82rem; margin-bottom: 1.1rem; }
+    .compress-bar-wrap {
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 999px; height: 6px; overflow: hidden; margin-bottom: .5rem;
+    }
+    .compress-bar-fill {
+      height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, #ffc107, #ff9800); transition: width .8s ease;
+    }
+    .compress-bar-fill::after {
+      content: ''; display: block; width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      animation: shimmer 1.8s infinite;
+    }
+    .compress-pct   { font-family: 'Space Mono', monospace; font-size: .72rem; color: #ffc107; }
     .compress-sizes { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: .4rem; }
 
+    /* ── Loading Section ── */
     #loading-section { display: none; text-align: center; }
     #loading-section.show { display: block; }
-    #loading-section.failed .loader-wrap, #loading-section.failed .progress-bar-wrap, #loading-section.failed .progress-steps { opacity: .1; filter: grayscale(100%); pointer-events: none; }
+    #loading-section.failed .loader-wrap,
+    #loading-section.failed .progress-bar-wrap,
+    #loading-section.failed .progress-steps { opacity: .1; filter: grayscale(100%); pointer-events: none; }
 
     .loader-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 1rem; }
     .loader-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; animation: spin 1.2s linear infinite; }
@@ -75,17 +202,36 @@
     .loading-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .3rem; }
     .loading-sub { color: var(--muted); font-size: .82rem; }
 
-    /* شريط التقدم */
-    .progress-bar-wrap { margin: 1.1rem 0 .4rem; background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 999px; height: 6px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1.2s ease; box-shadow: 0 0 8px rgba(0,229,255,.5); }
-    .progress-bar-fill::after { content: ''; display: block; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); animation: shimmer 1.8s infinite; }
+    .progress-bar-wrap {
+      margin: 1.1rem 0 .4rem;
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 999px; height: 6px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1.2s ease; box-shadow: 0 0 8px rgba(0,229,255,.5);
+    }
+    .progress-bar-fill::after {
+      content: ''; display: block; width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      animation: shimmer 1.8s infinite;
+    }
     @keyframes shimmer { 0%{transform:translateX(-150%)} 100%{transform:translateX(350%)} }
 
-    .timer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-family: 'Space Mono', monospace; font-size: .7rem; color: var(--muted); }
+    .timer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem; font-family: 'Space Mono', monospace; font-size: .7rem; color: var(--muted);
+    }
     .timer-row .elapsed { color: var(--accent); }
 
     .progress-steps { display: flex; flex-direction: column; gap: .45rem; text-align: right; }
-    .step { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .55rem .9rem; border-radius: 8px; background: rgba(255,255,255,.02); border: 1px solid transparent; font-size: .8rem; color: var(--muted); transition: all .5s; }
+    .step {
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+      padding: .55rem .9rem; border-radius: 8px;
+      background: rgba(255,255,255,.02); border: 1px solid transparent;
+      font-size: .8rem; color: var(--muted); transition: all .5s;
+    }
     .step .step-left { display: flex; align-items: center; gap: .65rem; }
     .step.active { color: var(--text); border-color: var(--accent); background: rgba(0,229,255,.05); }
     .step.done   { color: var(--success); border-color: rgba(0,200,150,.3); background: rgba(0,200,150,.05); }
@@ -96,31 +242,57 @@
     .step.active .step-eta { color: var(--accent); opacity: 1; }
     .step.done   .step-eta { color: var(--success); opacity: .8; }
 
-    /* خطوة تحميل الفيديو — جديدة */
-    #step-5 { }
-
-    .tips-box { margin-top: 1.1rem; padding: .8rem 1rem; border-radius: 10px; background: rgba(123,97,255,.06); border: 1px solid rgba(123,97,255,.2); text-align: right; }
+    .tips-box {
+      margin-top: 1.1rem; padding: .8rem 1rem; border-radius: 10px;
+      background: rgba(123,97,255,.06); border: 1px solid rgba(123,97,255,.2); text-align: right;
+    }
     .tips-box .tip-label { font-size: .68rem; font-family: 'Space Mono', monospace; color: var(--accent2); letter-spacing: .06em; margin-bottom: .45rem; }
     .tips-box .tip-text  { font-size: .8rem; color: var(--text); line-height: 1.55; min-height: 2.5rem; transition: opacity .4s; }
 
+    /* ── Result ── */
     #result-section { display: none; }
     #result-section.show { display: block; }
     .result-header { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
-    .result-badge { display: flex; align-items: center; gap: .5rem; padding: .4rem .9rem; background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.3); border-radius: 999px; color: var(--success); font-size: .8rem; font-weight: 500; }
+    .result-badge {
+      display: flex; align-items: center; gap: .5rem; padding: .4rem .9rem;
+      background: rgba(0,200,150,.1); border: 1px solid rgba(0,200,150,.3);
+      border-radius: 999px; color: var(--success); font-size: .8rem; font-weight: 500;
+    }
     .result-badge::before { content: '✓'; font-weight: 700; }
     .video-wrapper { border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--border); box-shadow: 0 0 40px rgba(0,0,0,.5); }
     #result-video { width: 100%; display: block; max-height: 320px; object-fit: contain; }
     .result-actions { display: flex; gap: .75rem; margin-top: 1rem; }
-    .action-btn { flex: 1; padding: .75rem; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: .9rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: all .2s; text-decoration: none; }
+    .action-btn {
+      flex: 1; padding: .75rem; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: .9rem; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: all .2s; text-decoration: none;
+    }
     .action-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); border-color: transparent; color: #000; }
     .action-btn:hover { transform: translateY(-2px); }
     .action-btn.primary:hover { box-shadow: 0 6px 20px rgba(0,229,255,.3); }
-    .again-btn { width: 100%; margin-top: 1rem; padding: .7rem; background: none; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: .88rem; cursor: pointer; transition: all .2s; }
+    .again-btn {
+      width: 100%; margin-top: 1rem; padding: .7rem;
+      background: none; border: 1px solid var(--border); border-radius: 10px;
+      color: var(--muted); font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: .88rem; cursor: pointer; transition: all .2s;
+    }
     .again-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    .error-box { display: none; margin-top: 1rem; padding: .9rem 1.1rem; background: rgba(255,77,109,.08); border: 1px solid rgba(255,77,109,.3); border-radius: 10px; color: var(--danger); font-size: .9rem; line-height: 1.6; }
+    /* ── Error ── */
+    .error-box {
+      display: none; margin-top: 1rem; padding: .9rem 1.1rem;
+      background: rgba(255,77,109,.08); border: 1px solid rgba(255,77,109,.3);
+      border-radius: 10px; color: var(--danger); font-size: .9rem; line-height: 1.6;
+    }
     .error-box.show { display: block; }
-    .reload-page-btn { display: none; margin-top: 1rem; width: 100%; padding: .8rem; background: var(--surface); border: 1px solid var(--danger); color: var(--danger); border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: 600; }
+    .reload-page-btn {
+      display: none; margin-top: 1rem; width: 100%; padding: .8rem;
+      background: var(--surface); border: 1px solid var(--danger);
+      color: var(--danger); border-radius: 10px; cursor: pointer;
+      font-family: inherit; font-weight: 600;
+    }
     .reload-page-btn.show { display: block; }
     .reload-page-btn:hover { background: rgba(255,77,109,.1); }
 
@@ -159,10 +331,13 @@
       <button class="remove-btn" id="remove-btn" title="إزالة">✕</button>
     </div>
     <div class="size-warning" id="size-warning">
-      <span>⚠️</span><span id="size-warning-text"></span>
+      <span>⚠️</span>
+      <span id="size-warning-text"></span>
     </div>
     <div class="error-box" id="error-box"></div>
-    <button class="reload-page-btn" id="reload-page-btn" onclick="location.reload()">🔄 إعادة تحميل الصفحة</button>
+    <button class="reload-page-btn" id="reload-page-btn" onclick="location.reload()">
+      🔄 إعادة تحميل الصفحة والبدء من جديد
+    </button>
     <button class="submit-btn" id="submit-btn" disabled>
       <span>🚀</span><span id="submit-label">ابدأ المعالجة</span>
     </button>
@@ -175,7 +350,10 @@
     <div class="compress-sub">تقليص حجم الملف تلقائياً للتوافق مع الخادم</div>
     <div class="compress-bar-wrap"><div class="compress-bar-fill" id="compress-fill"></div></div>
     <div class="compress-pct" id="compress-pct">0%</div>
-    <div class="compress-sizes"><span id="compress-original">الحجم الأصلي: —</span><span>الهدف: أقل من 1.5MB</span></div>
+    <div class="compress-sizes">
+      <span id="compress-original">الحجم الأصلي: —</span>
+      <span>الهدف: أقل من 1.5MB</span>
+    </div>
   </div>
 
   <!-- Loading -->
@@ -184,7 +362,7 @@
       <div class="loader-ring"></div><div class="loader-ring"></div>
       <div class="loader-ring"></div><div class="loader-core"></div>
     </div>
-    <div class="loading-title" id="loading-title">جاري المعالجة…</div>
+    <div class="loading-title">جاري المعالجة…</div>
     <div class="loading-sub">لا تُغلق هذه الصفحة أو تُغيّر التبويب</div>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
     <div class="timer-row">
@@ -192,11 +370,22 @@
       <span id="eta-display">الوقت المتوقع: ~2 دقيقة</span>
     </div>
     <div class="progress-steps">
-      <div class="step active" id="step-1"><div class="step-left"><div class="step-dot"></div> رفع ملف الصوت</div><span class="step-eta">~5ث</span></div>
-      <div class="step" id="step-2"><div class="step-left"><div class="step-dot"></div> تنزيل الفيديو من Drive</div><span class="step-eta">~15ث</span></div>
-      <div class="step" id="step-3"><div class="step-left"><div class="step-dot"></div> دمج الصوت والفيديو</div><span class="step-eta">~60ث</span></div>
-      <div class="step" id="step-4"><div class="step-left"><div class="step-dot"></div> تجهيز الملف النهائي</div><span class="step-eta">~20ث</span></div>
-      <div class="step" id="step-5"><div class="step-left"><div class="step-dot"></div> تحميل الفيديو</div><span class="step-eta">~10ث</span></div>
+      <div class="step active" id="step-1">
+        <div class="step-left"><div class="step-dot"></div> رفع ملف الصوت</div>
+        <span class="step-eta">~5ث</span>
+      </div>
+      <div class="step" id="step-2">
+        <div class="step-left"><div class="step-dot"></div> تنزيل الفيديو من Drive</div>
+        <span class="step-eta">~15ث</span>
+      </div>
+      <div class="step" id="step-3">
+        <div class="step-left"><div class="step-dot"></div> دمج الصوت والفيديو</div>
+        <span class="step-eta">~60ث</span>
+      </div>
+      <div class="step" id="step-4">
+        <div class="step-left"><div class="step-dot"></div> تجهيز الملف النهائي</div>
+        <span class="step-eta">~20ث</span>
+      </div>
     </div>
     <div class="tips-box">
       <div class="tip-label">💡 تعليمات</div>
@@ -220,28 +409,32 @@
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  مسح التخزين المحلي عند كل تحميل
+//  [1] مسح كل التخزين المحلي فور تحميل الصفحة
+//  يمنع أي رابط webhook قديم أو بيانات متضاربة من الجلسات السابقة
 // ════════════════════════════════════════════════════════════
 (function () {
-  try { localStorage.clear(); sessionStorage.clear(); } catch(e) {}
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+    console.log('🧹 localStorage + sessionStorage cleared');
+  } catch (e) {
+    console.warn('Storage clear failed:', e.message);
+  }
 })();
 
 // ════════════════════════════════════════════════════════════
-//  URLs — ثابتة لا تتغير
-//  SUBMIT_URL  : رفع الملف والحصول على job_id
-//  POLL_URL    : التحقق من الحالة فقط (JSON دائماً)
-//  DOWNLOAD_URL: تحميل الفيديو بعد اكتمال المعالجة
+//  [2] الـ URLs ثابتة في الكود — لا يوجد أي input يدوي
+//      لتغييرها يجب تعديل الكود مباشرة هنا فقط
 // ════════════════════════════════════════════════════════════
-const SUBMIT_URL   = 'https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4';
-const POLL_URL     = 'https://tasneemahmed-n8n.hf.space/webhook/poll-video';
-const DOWNLOAD_URL = 'https://tasneemahmed-n8n.hf.space/webhook/get-video';
+const SUBMIT_URL = 'https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4';
+const POLL_URL   = 'https://tasneemahmed-n8n.hf.space/webhook/poll-video';
 
-console.log('SUBMIT_URL  =', SUBMIT_URL);
-console.log('POLL_URL    =', POLL_URL);
-console.log('DOWNLOAD_URL=', DOWNLOAD_URL);
+// طباعة الـ URLs في الـ console للتأكيد عند كل تحميل
+console.log('🔗 SUBMIT_URL =', SUBMIT_URL);
+console.log('🔗 POLL_URL   =', POLL_URL);
 
 // ════════════════════════════════════════════════════════════
-//  DOM
+//  DOM refs
 // ════════════════════════════════════════════════════════════
 const dropZone       = document.getElementById('drop-zone');
 const fileInput      = document.getElementById('audio-file');
@@ -264,7 +457,6 @@ const progressFill   = document.getElementById('progress-fill');
 const elapsedDisp    = document.getElementById('elapsed-display');
 const etaDisp        = document.getElementById('eta-display');
 const tipText        = document.getElementById('tip-text');
-const loadingTitle   = document.getElementById('loading-title');
 const sizeWarning    = document.getElementById('size-warning');
 const sizeWarningTxt = document.getElementById('size-warning-text');
 const compressFill   = document.getElementById('compress-fill');
@@ -283,23 +475,23 @@ let startTime       = 0;
 // ════════════════════════════════════════════════════════════
 //  Config
 // ════════════════════════════════════════════════════════════
-const POLL_INTERVAL_MS   = 5000;
-const POLL_TIMEOUT_MS    = 15 * 60 * 1000;  // 15 دقيقة
-const UPLOAD_TIMEOUT_MS  = 10 * 60 * 1000;
-const DOWNLOAD_TIMEOUT_MS = 5 * 60 * 1000;  // 5 دقائق للتحميل
-const EST_TOTAL_SEC      = 120;
-const MAX_SAFE_SIZE      = 1.4 * 1024 * 1024;
-const COMPRESS_BITRATE   = 64_000;
+const POLL_INTERVAL_MS  = 5000;
+const POLL_TIMEOUT_MS   = 12 * 60 * 1000;
+const UPLOAD_TIMEOUT_MS = 10 * 60 * 1000;
+const EST_TOTAL_SEC     = 120;
+const MAX_SAFE_SIZE     = 1.4 * 1024 * 1024;
+const COMPRESS_BITRATE  = 64_000;
 
 // ════════════════════════════════════════════════════════════
 //  Tips
 // ════════════════════════════════════════════════════════════
 const TIPS = [
-  'يعمل الخادم الآن على معالجة ملفك — هذا قد يستغرق بضع دقائق.',
-  '⚠️ لا تُغلق هذه النافذة — المعالجة تعمل في الخلفية.',
-  '📱 إذا كنت على هاتف، أبقِ الشاشة مضاءة.',
-  '⏳ الوقت المتوقع: دقيقة إلى دقيقتين حسب حجم الصوت.',
-  '🔄 الصفحة تفحص الخادم كل 5 ثوانٍ تلقائياً.',
+  'يعمل الخادم الآن على معالجة ملفك — هذا قد يستغرق بضع دقائق حسب طول الصوت.',
+  '⚠️ لا تُغلق هذه النافذة أو التبويب — المعالجة تعمل في الخلفية وستكتمل تلقائياً.',
+  '📱 إذا كنت على هاتف، أبقِ الشاشة مضاءة لتجنب انقطاع الاتصال.',
+  '⏳ الوقت المتوقع للمعالجة: دقيقة إلى دقيقتين حسب حجم ملف الصوت.',
+  '🔄 الصفحة تفحص الخادم كل 5 ثوانٍ تلقائياً — ستنتقل للنتيجة فور الانتهاء.',
+  '✅ بعد اكتمال المعالجة ستظهر لك شاشة المعاينة والتنزيل مباشرةً.',
 ];
 let tipIndex = 0, tipTimer = null;
 function startTips() {
@@ -339,11 +531,10 @@ function updateStepsFromElapsed(sec) {
     if (i < cur) s.classList.add('done'); else if (i === cur) s.classList.add('active');
   }
 }
-function setStepDone(n) { const s = document.getElementById(`step-${n}`); if (s) { s.classList.remove('active'); s.classList.add('done'); } }
-function setStepActive(n) { const s = document.getElementById(`step-${n}`); if (s) { s.classList.remove('done'); s.classList.add('active'); } }
-function setAllStepsDone() { for (let i = 1; i <= 5; i++) setStepDone(i); }
-function resetSteps() {
-  for (let i = 1; i <= 5; i++) { const s = document.getElementById(`step-${i}`); if (s) s.classList.remove('active','done'); }
+function setStepDone(n)    { const s = document.getElementById(`step-${n}`); if (s) { s.classList.remove('active'); s.classList.add('done'); } }
+function setAllStepsDone() { for (let i = 1; i <= 4; i++) setStepDone(i); }
+function resetSteps()      {
+  for (let i = 1; i <= 4; i++) { const s = document.getElementById(`step-${i}`); if (s) s.classList.remove('active','done'); }
   document.getElementById('step-1').classList.add('active');
 }
 
@@ -362,7 +553,7 @@ function showSection(name) {
 // ════════════════════════════════════════════════════════════
 async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {} }
 async function releaseWakeLock() { if (wakeLock) { try { await wakeLock.release(); wakeLock = null; } catch(e) {} } }
-function enableExitProtection()  { window.onbeforeunload = () => 'جاري المعالجة...'; }
+function enableExitProtection()  { window.onbeforeunload = () => 'جاري المعالجة... هل أنت متأكد؟'; }
 function disableExitProtection() { window.onbeforeunload = null; }
 
 function cleanup() {
@@ -370,11 +561,18 @@ function cleanup() {
   if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
   window.removeEventListener('offline', handleOffline);
 }
-function handleOffline() { cleanup(); showFatalError('❌ انقطع الاتصال. أعد تحميل الصفحة.'); showSection('upload'); }
+function handleOffline() {
+  cleanup();
+  showFatalError('❌ انقطع الاتصال بالإنترنت! أعد تحميل الصفحة وحاول مرة أخرى.');
+  showSection('upload');
+}
 
+// ════════════════════════════════════════════════════════════
+//  Fetch with Timeout
+// ════════════════════════════════════════════════════════════
 function fetchWithTimeout(url, options, ms) {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), ms);
+  const t    = setTimeout(() => ctrl.abort(), ms);
   return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(t));
 }
 
@@ -384,15 +582,23 @@ function fetchWithTimeout(url, options, ms) {
 function showError(msg)      { errorBox.textContent = msg; errorBox.classList.add('show'); }
 function showFatalError(msg) { showError(msg); loadingSec.classList.add('failed'); reloadPageBtn.classList.add('show'); submitBtn.style.display = 'none'; }
 function hideError()         { errorBox.classList.remove('show'); errorBox.textContent = ''; reloadPageBtn.classList.remove('show'); submitBtn.style.display = 'flex'; loadingSec.classList.remove('failed'); }
-function formatBytes(b)      { if (b < 1024) return b+' B'; if (b < 1048576) return (b/1024).toFixed(1)+' KB'; return (b/1048576).toFixed(2)+' MB'; }
+
+// ════════════════════════════════════════════════════════════
+//  Format Bytes
+// ════════════════════════════════════════════════════════════
+function formatBytes(b) {
+  if (b < 1024)    return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
 
 // ════════════════════════════════════════════════════════════
 //  Audio Compression
 // ════════════════════════════════════════════════════════════
 async function compressAudio(file, onProgress) {
-  const buf = await file.arrayBuffer();
+  const buf     = await file.arrayBuffer();
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) throw new Error('AudioContext غير مدعوم');
+  if (!AudioCtx) throw new Error('AudioContext غير مدعوم في هذا المتصفح');
   const ctx = new AudioCtx();
   let audioBuffer;
   try   { audioBuffer = await ctx.decodeAudioData(buf); }
@@ -406,6 +612,7 @@ async function compressAudio(file, onProgress) {
 
   const opts = { audioBitsPerSecond: COMPRESS_BITRATE };
   if (mime) opts.mimeType = mime;
+
   let rec;
   try   { rec = new MediaRecorder(dest.stream, opts); }
   catch (e) { ctx.close(); throw new Error('MediaRecorder غير مدعوم: ' + e.message); }
@@ -421,25 +628,45 @@ async function compressAudio(file, onProgress) {
       resolve(new File([new Blob(chunks, { type: fm })], file.name.replace(/\.[^.]+$/, '') + '.' + ext, { type: fm }));
     };
     const dur = audioBuffer.duration, t0 = Date.now();
-    const iv  = setInterval(() => { const p = Math.min((Date.now()-t0)/1000/dur, 0.97); onProgress?.(p); if (p >= 0.97) clearInterval(iv); }, 300);
+    const iv  = setInterval(() => {
+      const p = Math.min((Date.now()-t0)/1000/dur, 0.97);
+      onProgress?.(p); if (p >= 0.97) clearInterval(iv);
+    }, 300);
     src.onended = () => { clearInterval(iv); onProgress?.(1); rec.stop(); };
     src.start(0); rec.start(200);
   });
 }
 
+// ════════════════════════════════════════════════════════════
+//  Size Warning
+// ════════════════════════════════════════════════════════════
 function updateSizeWarning(file) {
-  if (!file || file.size <= MAX_SAFE_SIZE) { sizeWarning.classList.remove('show'); submitLabel.textContent = 'ابدأ المعالجة'; return; }
-  sizeWarningTxt.textContent = `حجم الملف (${formatBytes(file.size)}) يتجاوز حد الخادم. سيتم ضغطه تلقائياً.`;
-  sizeWarning.classList.add('show'); submitLabel.textContent = 'ضغط ورفع';
+  if (!file || file.size <= MAX_SAFE_SIZE) {
+    sizeWarning.classList.remove('show');
+    submitLabel.textContent = 'ابدأ المعالجة';
+    return;
+  }
+  sizeWarningTxt.textContent = `حجم الملف (${formatBytes(file.size)}) يتجاوز حد الخادم. سيتم ضغطه تلقائياً إلى 64 kbps قبل الرفع.`;
+  sizeWarning.classList.add('show');
+  submitLabel.textContent = 'ضغط ورفع';
 }
 
+// ════════════════════════════════════════════════════════════
+//  File Handling
+// ════════════════════════════════════════════════════════════
 function setFile(file) {
   if (!file) return;
-  selectedFile = file; fileNameTxt.textContent = file.name; fileSizeTxt.textContent = formatBytes(file.size);
-  fileInfo.classList.add('show'); submitBtn.disabled = false; hideError(); updateSizeWarning(file);
+  selectedFile = file;
+  fileNameTxt.textContent = file.name;
+  fileSizeTxt.textContent = formatBytes(file.size);
+  fileInfo.classList.add('show');
+  submitBtn.disabled = false;
+  hideError();
+  updateSizeWarning(file);
 }
 function clearFile() {
-  selectedFile = null; fileInput.value = ''; fileInfo.classList.remove('show'); sizeWarning.classList.remove('show');
+  selectedFile = null; fileInput.value = '';
+  fileInfo.classList.remove('show'); sizeWarning.classList.remove('show');
   submitLabel.textContent = 'ابدأ المعالجة'; submitBtn.disabled = true;
 }
 
@@ -447,62 +674,10 @@ fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fil
 removeBtn.addEventListener('click', e => { e.preventDefault(); clearFile(); });
 dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); const f = e.dataTransfer?.files?.[0]; if (f) setFile(f); });
-
-// ════════════════════════════════════════════════════════════
-//  DOWNLOAD VIDEO — خطوة منفصلة بعد poll done
-// ════════════════════════════════════════════════════════════
-async function downloadVideo(jobId) {
-  console.log(`📥 Downloading video for job: ${jobId}`);
-  loadingTitle.textContent = 'جاري تحميل الفيديو…';
-  setStepDone(4);
-  setStepActive(5);
-  tipText.textContent = '✅ اكتملت المعالجة — جاري تحميل الفيديو إلى متصفحك…';
-
-  try {
-    const res = await fetchWithTimeout(
-      `${DOWNLOAD_URL}?job_id=${encodeURIComponent(jobId)}`,
-      { method: 'GET' },
-      DOWNLOAD_TIMEOUT_MS
-    );
-
-    if (!res.ok) {
-      const txt = await res.text().catch(() => '');
-      throw new Error(`فشل التحميل (${res.status}): ${txt.slice(0, 120)}`);
-    }
-
-    const buffer = await res.arrayBuffer();
-    const bytes  = new Uint8Array(buffer);
-    const ct     = res.headers.get('Content-Type') || '';
-
-    // كشف MP4 بالـ magic bytes
-    const isMp4 = bytes.length > 8
-      && bytes[4] === 0x66 && bytes[5] === 0x74
-      && bytes[6] === 0x79 && bytes[7] === 0x70;
-
-    if ((!ct.includes('video') && !isMp4) || bytes.length < 1000) {
-      const txt = new TextDecoder().decode(buffer.slice(0, 200));
-      throw new Error(`الرد ليس فيديو: CT=${ct}, size=${bytes.length}, preview=${txt}`);
-    }
-
-    const url = URL.createObjectURL(new Blob([buffer], { type: 'video/mp4' }));
-    progressFill.style.width = '100%';
-    setAllStepsDone();
-    resultVideo.src  = url;
-    downloadBtn.href = url;
-    cleanup();
-    setTimeout(() => showSection('result'), 400);
-
-  } catch(err) {
-    cleanup();
-    if (err.name === 'AbortError') {
-      showFatalError('❌ انتهت مهلة تحميل الفيديو. حاول مرة أخرى.');
-    } else {
-      showFatalError('❌ فشل تحميل الفيديو: ' + (err.message || 'خطأ غير متوقع'));
-    }
-    showSection('upload');
-  }
-}
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('dragover');
+  const f = e.dataTransfer?.files?.[0]; if (f) setFile(f);
+});
 
 // ════════════════════════════════════════════════════════════
 //  SUBMIT
@@ -516,7 +691,7 @@ submitBtn.addEventListener('click', async () => {
   enableExitProtection();
   window.addEventListener('offline', handleOffline);
 
-  // ── ضغط ──────────────────────────────────────────────────
+  // ── ضغط إذا لزم ───────────────────────────────────────────
   let fileToUpload = selectedFile;
   if (selectedFile.size > MAX_SAFE_SIZE) {
     showSection('compress');
@@ -528,21 +703,23 @@ submitBtn.addEventListener('click', async () => {
         compressFill.style.width = pct + '%'; compressPct.textContent = pct + '%';
       });
       console.log(`✅ Compressed: ${formatBytes(selectedFile.size)} → ${formatBytes(fileToUpload.size)}`);
-    } catch(err) { cleanup(); showError('❌ فشل الضغط: ' + err.message); showSection('upload'); return; }
+    } catch(err) {
+      cleanup(); showError('❌ فشل الضغط: ' + err.message); showSection('upload'); return;
+    }
   }
 
-  // ── رفع ──────────────────────────────────────────────────
+  // ── رفع الملف ──────────────────────────────────────────────
   showSection('loading');
   resetSteps();
   progressFill.style.width = '0%'; elapsedDisp.textContent = '00:00';
   etaDisp.textContent = 'الوقت المتوقع: ~2 دقيقة';
-  loadingTitle.textContent = 'جاري المعالجة…';
   startTips();
 
   let jobId = null;
   try {
     const form = new FormData();
     form.append('audio_file', fileToUpload, fileToUpload.name);
+
     console.log(`📤 POST → ${SUBMIT_URL}`);
     const res = await fetchWithTimeout(SUBMIT_URL, { method: 'POST', body: form }, UPLOAD_TIMEOUT_MS);
 
@@ -550,36 +727,44 @@ submitBtn.addEventListener('click', async () => {
     const bytes       = new Uint8Array(buffer);
     const contentType = res.headers.get('Content-Type') || '';
     const rawText     = new TextDecoder().decode(buffer.slice(0, 400));
+
     console.log(`Response: ${res.status} | CT: ${contentType} | size: ${bytes.length}`);
 
     if (!res.ok) {
-      if (res.status === 413) throw new Error(`❌ الملف أكبر من الحد (413).`);
-      if (res.status === 500) throw new Error(`❌ خطأ في الخادم (500) — حجم الملف ${formatBytes(fileToUpload.size)} تجاوز حد الـ proxy.`);
-      if ([502,503,504].includes(res.status)) throw new Error(`❌ الخادم غير متاح (${res.status}).`);
+      if (res.status === 413) throw new Error(`❌ الملف أكبر من الحد بعد الضغط (413). جرب ملفاً أقصر.`);
+      if (res.status === 500) throw new Error(`❌ خطأ في الخادم (500) — حجم الملف (${formatBytes(fileToUpload.size)}) تجاوز حد الـ proxy. جرب ملفاً أقصر مدة.`);
+      if ([502,503,504].includes(res.status)) throw new Error(`❌ الخادم غير متاح (${res.status}). انتظر دقيقة وحاول مجدداً.`);
       throw new Error(`❌ فشل الرفع (${res.status}): ${rawText.slice(0,120)}`);
     }
 
+    // MP4 مباشر؟
+    const isMp4 = bytes.length > 8 && bytes[4]===0x66 && bytes[5]===0x74 && bytes[6]===0x79 && bytes[7]===0x70;
+    if (isMp4 || contentType.includes('video')) {
+      const url = URL.createObjectURL(new Blob([buffer], { type: 'video/mp4' }));
+      progressFill.style.width = '100%'; setAllStepsDone();
+      resultVideo.src = url; downloadBtn.href = url;
+      cleanup(); setTimeout(() => showSection('result'), 400); return;
+    }
+
+    // JSON → job_id
     if (contentType.includes('json') || rawText.trim().startsWith('{')) {
       let data;
       try { data = JSON.parse(new TextDecoder().decode(buffer)); } catch { throw new Error(`JSON غير صالح: ${rawText.slice(0,120)}`); }
       jobId = data.job_id;
       if (!jobId) throw new Error(`الخادم لم يُرجع job_id: ${rawText.slice(0,150)}`);
       console.log(`✅ job_id: ${jobId}`);
-      setStepDone(1);
-      startTime = Date.now();
-      startElapsedTimer();
+      setStepDone(1); startTime = Date.now(); startElapsedTimer();
     } else {
-      throw new Error(`استجابة غير متوقعة: ${rawText.slice(0,120)}`);
+      throw new Error(`استجابة غير متوقعة (${res.status}): ${rawText.slice(0,120)}`);
     }
+
   } catch(err) {
     cleanup();
-    showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع.' : (err.message || '❌ خطأ غير متوقع'));
+    showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع — الملف كبير جداً أو الاتصال بطيء.' : (err.message || '❌ خطأ غير متوقع'));
     showSection('upload'); return;
   }
 
-  // ════════════════════════════════════════════════════════
-  //  POLLING — يتحقق من الحالة فقط، لا ينتظر binary أبداً
-  // ════════════════════════════════════════════════════════
+  // ── Polling ────────────────────────────────────────────────
   console.log(`🔄 Polling ${POLL_URL}?job_id=${jobId}`);
   let attempts = 0;
 
@@ -588,40 +773,39 @@ submitBtn.addEventListener('click', async () => {
     updateStepsFromElapsed(Math.floor(elapsed / 1000));
 
     if (elapsed > POLL_TIMEOUT_MS) {
-      cleanup(); showFatalError('❌ انتهت مهلة الانتظار (15 دقيقة).'); showSection('upload'); return;
+      cleanup(); showFatalError('❌ انتهت مهلة الانتظار (12 دقيقة). حاول مرة أخرى.'); showSection('upload'); return;
     }
 
     try {
-      const res = await fetchWithTimeout(
-        `${POLL_URL}?job_id=${encodeURIComponent(jobId)}`,
-        { method: 'GET' }, 15000  // 15 ثانية كافية — الرد JSON صغير دائماً
-      );
+      const res = await fetchWithTimeout(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`, { method: 'GET' }, 30000);
       if (!res.ok) { console.warn(`Poll #${attempts}: HTTP ${res.status}`); return; }
 
-      const data = await res.json();
-      console.log(`Poll #${attempts}: status=${data.status} elapsed=${Math.floor(elapsed/1000)}s`);
+      const buffer = await res.arrayBuffer();
+      const bytes  = new Uint8Array(buffer);
+      const ct     = res.headers.get('Content-Type') || '';
+      const isMp4  = bytes.length > 8 && bytes[4]===0x66 && bytes[5]===0x74 && bytes[6]===0x79 && bytes[7]===0x70;
+      const isVideo = ct.includes('video') || ct.includes('octet-stream') || isMp4;
 
-      if (data.status === 'done') {
-        // إيقاف الـ polling فوراً
+      console.log(`Poll #${attempts}: CT="${ct}" isMp4=${isMp4} size=${bytes.length}`);
+
+      if (isVideo && bytes.length > 1000) {
         clearInterval(pollingInterval); pollingInterval = null;
-        stopElapsedTimer();
-
-        // طلب الفيديو بشكل منفصل
-        await downloadVideo(jobId);
-        return;
+        const url = URL.createObjectURL(new Blob([buffer], { type: 'video/mp4' }));
+        progressFill.style.width = '100%'; setAllStepsDone();
+        resultVideo.src = url; downloadBtn.href = url;
+        cleanup(); setTimeout(() => showSection('result'), 500); return;
       }
 
-      if (data.status === 'error') {
-        clearInterval(pollingInterval); pollingInterval = null;
-        cleanup();
-        showFatalError('❌ فشلت المعالجة: ' + (data.message || 'خطأ غير معروف'));
-        showSection('upload');
-      }
-      // processing / not_found → نكمل polling
+      try {
+        const data = JSON.parse(new TextDecoder().decode(buffer));
+        console.log(`Poll #${attempts}: status=${data.status}`);
+        if (data.status === 'error') {
+          clearInterval(pollingInterval); pollingInterval = null;
+          cleanup(); showFatalError('❌ فشلت المعالجة: ' + (data.message || 'خطأ غير معروف')); showSection('upload');
+        }
+      } catch { /* still processing */ }
 
-    } catch(err) {
-      if (err.name !== 'AbortError') console.warn(`Poll #${attempts}:`, err.message);
-    }
+    } catch(err) { if (err.name !== 'AbortError') console.warn(`Poll #${attempts}:`, err.message); }
   }, POLL_INTERVAL_MS);
 });
 
@@ -634,10 +818,10 @@ againBtn.addEventListener('click', () => {
   clearFile(); hideError(); cleanup(); resetSteps();
   progressFill.style.width = '0%'; elapsedDisp.textContent = '00:00';
   etaDisp.textContent = 'الوقت المتوقع: ~2 دقيقة';
-  loadingTitle.textContent = 'جاري المعالجة…';
   showSection('upload');
 });
 
+// Init
 showSection('upload');
 </script>
 </body>
