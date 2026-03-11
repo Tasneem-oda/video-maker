@@ -62,19 +62,6 @@
 
     /* ── Header ── */
     .header { text-align: center; animation: fadeUp .5s .1s ease both; }
-    .header .badge {
-      display: inline-flex; align-items: center; gap: .5rem;
-      padding: .35rem .9rem;
-      border: 1px solid var(--accent); border-radius: 999px;
-      font-size: .72rem; font-family: 'Space Mono', monospace;
-      color: var(--accent); letter-spacing: .08em;
-      margin-bottom: 1.2rem;
-      background: rgba(0,229,255,.05);
-    }
-    .header .badge span {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent); animation: pulse 1.5s infinite;
-    }
     .header h1 {
       font-size: clamp(1.8rem, 5vw, 2.8rem);
       font-weight: 700; letter-spacing: -.02em; line-height: 1.15;
@@ -309,12 +296,10 @@
 <main class="page">
 
   <header class="header">
-    <div class="badge"><span></span> n8n Automation — Polling Mode</div>
     <h1>دمج الصوت<br>مع <em>الفيديو</em></h1>
     <p>ارفع ملف الصوت وسنتولى الباقي تلقائياً</p>
   </header>
 
-  <!-- Upload -->
   <div class="card" id="upload-section">
     <div class="drop-zone" id="drop-zone">
       <input type="file" id="audio-file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.wma,.opus,.mp4" />
@@ -343,7 +328,6 @@
     </button>
   </div>
 
-  <!-- Compress -->
   <div class="card" id="compress-section">
     <span class="compress-icon">🗜️</span>
     <div class="compress-title">جاري ضغط الصوت…</div>
@@ -356,7 +340,6 @@
     </div>
   </div>
 
-  <!-- Loading -->
   <div class="card" id="loading-section">
     <div class="loader-wrap">
       <div class="loader-ring"></div><div class="loader-ring"></div>
@@ -393,7 +376,6 @@
     </div>
   </div>
 
-  <!-- Result -->
   <div class="card" id="result-section">
     <div class="result-header"><div class="result-badge">اكتملت المعالجة</div></div>
     <div class="video-wrapper"><video id="result-video" controls playsinline></video></div>
@@ -404,34 +386,26 @@
     <button class="again-btn" id="again-btn">↺ معالجة ملف آخر</button>
   </div>
 
-  <footer class="footer">Powered by n8n + FFmpeg · Polling Mode</footer>
+  <footer class="footer">© جميع الحقوق محفوظة لخدمة المعالجة الصوتية والمرئية</footer>
 </main>
 
 <script>
 // ════════════════════════════════════════════════════════════
 //  [1] مسح كل التخزين المحلي فور تحميل الصفحة
-//  يمنع أي رابط webhook قديم أو بيانات متضاربة من الجلسات السابقة
 // ════════════════════════════════════════════════════════════
 (function () {
   try {
     localStorage.clear();
     sessionStorage.clear();
-    console.log('🧹 localStorage + sessionStorage cleared');
   } catch (e) {
-    console.warn('Storage clear failed:', e.message);
   }
 })();
 
 // ════════════════════════════════════════════════════════════
-//  [2] الـ URLs ثابتة في الكود — لا يوجد أي input يدوي
-//      لتغييرها يجب تعديل الكود مباشرة هنا فقط
+//  [2] الـ URLs الثابتة
 // ════════════════════════════════════════════════════════════
 const SUBMIT_URL = 'https://tasneemahmed-n8n.hf.space/webhook/03650388-1e05-48b5-89f9-8cdfffa78ce4';
 const POLL_URL   = 'https://tasneemahmed-n8n.hf.space/webhook/poll-video';
-
-// طباعة الـ URLs في الـ console للتأكيد عند كل تحميل
-console.log('🔗 SUBMIT_URL =', SUBMIT_URL);
-console.log('🔗 POLL_URL   =', POLL_URL);
 
 // ════════════════════════════════════════════════════════════
 //  DOM refs
@@ -598,11 +572,11 @@ function formatBytes(b) {
 async function compressAudio(file, onProgress) {
   const buf     = await file.arrayBuffer();
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) throw new Error('AudioContext غير مدعوم في هذا المتصفح');
+  if (!AudioCtx) throw new Error('خاصية معالجة الصوت غير مدعومة في هذا المتصفح');
   const ctx = new AudioCtx();
   let audioBuffer;
   try   { audioBuffer = await ctx.decodeAudioData(buf); }
-  catch (e) { ctx.close(); throw new Error('تعذّر فك ترميز الصوت: ' + e.message); }
+  catch (e) { ctx.close(); throw new Error('تعذّر فك ترميز ملف الصوت. يرجى تجربة ملف آخر.'); }
 
   const types = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg',''];
   const mime  = types.find(t => !t || MediaRecorder.isTypeSupported(t)) || '';
@@ -615,12 +589,12 @@ async function compressAudio(file, onProgress) {
 
   let rec;
   try   { rec = new MediaRecorder(dest.stream, opts); }
-  catch (e) { ctx.close(); throw new Error('MediaRecorder غير مدعوم: ' + e.message); }
+  catch (e) { ctx.close(); throw new Error('المتصفح لا يدعم ضغط الملف. يرجى تحديث المتصفح.'); }
 
   const chunks = [];
   return new Promise((resolve, reject) => {
     rec.ondataavailable = e => { if (e.data?.size > 0) chunks.push(e.data); };
-    rec.onerror  = e  => { ctx.close(); reject(new Error('خطأ في الضغط: ' + (e.error?.message || e))); };
+    rec.onerror  = e  => { ctx.close(); reject(new Error('حدث خطأ أثناء تقليص حجم الملف.')); };
     rec.onstop   = () => {
       ctx.close();
       const fm  = mime || 'audio/webm';
@@ -646,9 +620,9 @@ function updateSizeWarning(file) {
     submitLabel.textContent = 'ابدأ المعالجة';
     return;
   }
-  sizeWarningTxt.textContent = `حجم الملف (${formatBytes(file.size)}) يتجاوز حد الخادم. سيتم ضغطه تلقائياً إلى 64 kbps قبل الرفع.`;
+  sizeWarningTxt.textContent = `حجم الملف (${formatBytes(file.size)}) كبير نسبياً. سيتم تقليصه تلقائياً قبل المعالجة لتسريع العملية.`;
   sizeWarning.classList.add('show');
-  submitLabel.textContent = 'ضغط ورفع';
+  submitLabel.textContent = 'تجهيز ورفع';
 }
 
 // ════════════════════════════════════════════════════════════
@@ -702,9 +676,8 @@ submitBtn.addEventListener('click', async () => {
         const pct = Math.round(p * 100);
         compressFill.style.width = pct + '%'; compressPct.textContent = pct + '%';
       });
-      console.log(`✅ Compressed: ${formatBytes(selectedFile.size)} → ${formatBytes(fileToUpload.size)}`);
     } catch(err) {
-      cleanup(); showError('❌ فشل الضغط: ' + err.message); showSection('upload'); return;
+      cleanup(); showError('❌ حدث خطأ أثناء تجهيز الملف: ' + err.message); showSection('upload'); return;
     }
   }
 
@@ -720,7 +693,6 @@ submitBtn.addEventListener('click', async () => {
     const form = new FormData();
     form.append('audio_file', fileToUpload, fileToUpload.name);
 
-    console.log(`📤 POST → ${SUBMIT_URL}`);
     const res = await fetchWithTimeout(SUBMIT_URL, { method: 'POST', body: form }, UPLOAD_TIMEOUT_MS);
 
     const buffer      = await res.arrayBuffer();
@@ -728,13 +700,11 @@ submitBtn.addEventListener('click', async () => {
     const contentType = res.headers.get('Content-Type') || '';
     const rawText     = new TextDecoder().decode(buffer.slice(0, 400));
 
-    console.log(`Response: ${res.status} | CT: ${contentType} | size: ${bytes.length}`);
-
     if (!res.ok) {
-      if (res.status === 413) throw new Error(`❌ الملف أكبر من الحد بعد الضغط (413). جرب ملفاً أقصر.`);
-      if (res.status === 500) throw new Error(`❌ خطأ في الخادم (500) — حجم الملف (${formatBytes(fileToUpload.size)}) تجاوز حد الـ proxy. جرب ملفاً أقصر مدة.`);
-      if ([502,503,504].includes(res.status)) throw new Error(`❌ الخادم غير متاح (${res.status}). انتظر دقيقة وحاول مجدداً.`);
-      throw new Error(`❌ فشل الرفع (${res.status}): ${rawText.slice(0,120)}`);
+      if (res.status === 413) throw new Error(`❌ حجم الملف يتجاوز الحد المسموح به. يرجى تجربة ملف صوتي أقصر.`);
+      if (res.status === 500) throw new Error(`❌ هناك ضغط على الخادم حالياً. يرجى الانتظار قليلاً والمحاولة مرة أخرى.`);
+      if ([502,503,504].includes(res.status)) throw new Error(`❌ الخدمة غير متاحة مؤقتاً. يرجى الانتظار دقيقة والمحاولة مجدداً.`);
+      throw new Error(`❌ حدث خطأ غير متوقع أثناء الرفع. يرجى المحاولة لاحقاً.`);
     }
 
     // MP4 مباشر؟
@@ -749,23 +719,21 @@ submitBtn.addEventListener('click', async () => {
     // JSON → job_id
     if (contentType.includes('json') || rawText.trim().startsWith('{')) {
       let data;
-      try { data = JSON.parse(new TextDecoder().decode(buffer)); } catch { throw new Error(`JSON غير صالح: ${rawText.slice(0,120)}`); }
+      try { data = JSON.parse(new TextDecoder().decode(buffer)); } catch { throw new Error(`❌ استجابة النظام غير مفهومة. يرجى المحاولة لاحقاً.`); }
       jobId = data.job_id;
-      if (!jobId) throw new Error(`الخادم لم يُرجع job_id: ${rawText.slice(0,150)}`);
-      console.log(`✅ job_id: ${jobId}`);
+      if (!jobId) throw new Error(`❌ فشل النظام في استلام الطلب بشكل صحيح. يرجى المحاولة لاحقاً.`);
       setStepDone(1); startTime = Date.now(); startElapsedTimer();
     } else {
-      throw new Error(`استجابة غير متوقعة (${res.status}): ${rawText.slice(0,120)}`);
+      throw new Error(`❌ حدث خطأ داخلي في النظام. يرجى المحاولة لاحقاً.`);
     }
 
   } catch(err) {
     cleanup();
-    showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع — الملف كبير جداً أو الاتصال بطيء.' : (err.message || '❌ خطأ غير متوقع'));
+    showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع — قد يكون الملف كبيراً جداً أو اتصال الإنترنت لديك بطيء.' : (err.message || '❌ حدث خطأ غير متوقع'));
     showSection('upload'); return;
   }
 
   // ── Polling ────────────────────────────────────────────────
-  console.log(`🔄 Polling ${POLL_URL}?job_id=${jobId}`);
   let attempts = 0;
 
   pollingInterval = setInterval(async () => {
@@ -773,20 +741,18 @@ submitBtn.addEventListener('click', async () => {
     updateStepsFromElapsed(Math.floor(elapsed / 1000));
 
     if (elapsed > POLL_TIMEOUT_MS) {
-      cleanup(); showFatalError('❌ انتهت مهلة الانتظار (12 دقيقة). حاول مرة أخرى.'); showSection('upload'); return;
+      cleanup(); showFatalError('❌ نعتذر، استغرقت المعالجة وقتاً أطول من المتوقع. يرجى المحاولة بملف أقصر.'); showSection('upload'); return;
     }
 
     try {
       const res = await fetchWithTimeout(`${POLL_URL}?job_id=${encodeURIComponent(jobId)}`, { method: 'GET' }, 30000);
-      if (!res.ok) { console.warn(`Poll #${attempts}: HTTP ${res.status}`); return; }
+      if (!res.ok) { return; }
 
       const buffer = await res.arrayBuffer();
       const bytes  = new Uint8Array(buffer);
       const ct     = res.headers.get('Content-Type') || '';
       const isMp4  = bytes.length > 8 && bytes[4]===0x66 && bytes[5]===0x74 && bytes[6]===0x79 && bytes[7]===0x70;
       const isVideo = ct.includes('video') || ct.includes('octet-stream') || isMp4;
-
-      console.log(`Poll #${attempts}: CT="${ct}" isMp4=${isMp4} size=${bytes.length}`);
 
       if (isVideo && bytes.length > 1000) {
         clearInterval(pollingInterval); pollingInterval = null;
@@ -798,18 +764,17 @@ submitBtn.addEventListener('click', async () => {
 
       try {
         const data = JSON.parse(new TextDecoder().decode(buffer));
-        console.log(`Poll #${attempts}:`, data);
         
-        // التقاط حالة الخطأ الخاصة بنا، أو التقاط أخطاء n8n القياسية الناتجة عن الانهيار
+        // التقاط أخطاء الخادم القياسية الناتجة عن الانهيار
         if (data.status === 'error' || data.message) {
           clearInterval(pollingInterval); pollingInterval = null;
           cleanup(); 
-          // عرض رسالة الخطأ الآتية من الخادم لإنهاء حلقة الانتظار
-          showFatalError('❌ فشلت المعالجة: ' + (data.error || data.message || 'خطأ غير معروف في الخادم')); 
+          // عرض رسالة خطأ لطيفة للعميل
+          showFatalError('❌ نعتذر، تعذر إكمال معالجة الملف. يرجى المحاولة مرة أخرى بعد قليل.'); 
           showSection('upload');
         }
       } catch { /* still processing */ }
-    } catch(err) { if (err.name !== 'AbortError') console.warn(`Poll #${attempts}:`, err.message); }
+    } catch(err) { }
   }, POLL_INTERVAL_MS);
 });
 
