@@ -375,7 +375,7 @@
         <span class="step-eta">~5ث</span>
       </div>
       <div class="step" id="step-2">
-        <div class="step-left"><div class="step-dot"></div> تنزيل الفيديو من Drive</div>
+        <div class="step-left"><div class="step-dot"></div> تنزيل الفيديو  </div>
         <span class="step-eta">~15ث</span>
       </div>
       <div class="step" id="step-3">
@@ -490,7 +490,7 @@ const TIPS = [
   '⚠️ لا تُغلق هذه النافذة أو التبويب — المعالجة تعمل في الخلفية وستكتمل تلقائياً.',
   '📱 إذا كنت على هاتف، أبقِ الشاشة مضاءة لتجنب انقطاع الاتصال.',
   '⏳ الوقت المتوقع للمعالجة: دقيقة إلى دقيقتين حسب حجم ملف الصوت.',
-  '🔄 الصفحة تفحص الخادم كل 5 ثوانٍ تلقائياً — ستنتقل للنتيجة فور الانتهاء.',
+  '🔄 ستنتقل للنتيجة فور الانتهاء.',
   '✅ بعد اكتمال المعالجة ستظهر لك شاشة المعاينة والتنزيل مباشرةً.',
 ];
 let tipIndex = 0, tipTimer = null;
@@ -798,13 +798,17 @@ submitBtn.addEventListener('click', async () => {
 
       try {
         const data = JSON.parse(new TextDecoder().decode(buffer));
-        console.log(`Poll #${attempts}: status=${data.status}`);
-        if (data.status === 'error') {
+        console.log(`Poll #${attempts}:`, data);
+        
+        // التقاط حالة الخطأ الخاصة بنا، أو التقاط أخطاء n8n القياسية الناتجة عن الانهيار
+        if (data.status === 'error' || data.message) {
           clearInterval(pollingInterval); pollingInterval = null;
-          cleanup(); showFatalError('❌ فشلت المعالجة: ' + (data.message || 'خطأ غير معروف')); showSection('upload');
+          cleanup(); 
+          // عرض رسالة الخطأ الآتية من الخادم لإنهاء حلقة الانتظار
+          showFatalError('❌ فشلت المعالجة: ' + (data.error || data.message || 'خطأ غير معروف في الخادم')); 
+          showSection('upload');
         }
       } catch { /* still processing */ }
-
     } catch(err) { if (err.name !== 'AbortError') console.warn(`Poll #${attempts}:`, err.message); }
   }, POLL_INTERVAL_MS);
 });
